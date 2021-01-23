@@ -85,8 +85,7 @@ let UserDetails2 = ({ id }) => {
       .doc(id)
       .collection("service")
       .orderBy("ChattimeDate", "desc")
-      .get()
-      .then((result) => {
+      .onSnapshot((result) => {
         setservicedata([]);
         if (!result.empty) {
           result.forEach((d) => {
@@ -106,8 +105,7 @@ let UserDetails2 = ({ id }) => {
     db.collection("web_user")
       .doc(id)
       .collection("Programs")
-      .get()
-      .then((result) => {
+      .onSnapshot((result) => {
         setprogramdata([]);
         if (!result.empty) {
           result.forEach((d) => {

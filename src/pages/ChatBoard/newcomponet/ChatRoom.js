@@ -1,13 +1,21 @@
+/* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import firebase from "../../../firebase";
 import SendMessaj from "./SendMessaj";
 import { useDispatch } from "react-redux";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import DownloadLink from "react-download-link";
 
 const db = firebase.firestore();
 
 const useStyles = makeStyles((theme) => ({
+  paper: {
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: "white",
+  },
   paper1: {
     padding: theme.spacing(1),
     textAlign: "center",
@@ -27,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     height: "83vh",
     // border: "2px solid black",
-    overflow: "auto",
+    // overflow: "auto",
   },
   type_container: {
     position: "absolute",
@@ -40,35 +48,15 @@ const useStyles = makeStyles((theme) => ({
   sendbtn: {
     height: "100%",
   },
+  img: {
+    maxWidth: "40%",
+  },
 }));
 
 function ChatRoom({ id }) {
   const classes = useStyles();
   const [Chat_text, setChat_text] = useState([]);
-  const [page, setpage] = useState(null);
-
-  useEffect(() => {
-    db.collection("web_user")
-      .doc(id)
-      .collection("ChatRoom")
-      .doc("krushnkantv1@gmail.com")
-      .set({ StartChat: "stop" })
-      .then((result) => {
-        if (result) {
-          db.collection("web_user")
-            .doc(localStorage.getItem("email"))
-            .collection("ChatRoom")
-            .doc(id)
-            .onSnapshot((result) => {
-              if (result.data().StartChat === "stop") {
-                setpage(null);
-              } else if (result.data().StartChat === "start") {
-                setpage(<SendMessaj id={id} />);
-              }
-            });
-        }
-      });
-  }, [id]);
+  const [page, setpage] = useState(<SendMessaj id={id} />);
 
   useEffect(() => {
     var messageBody = document.querySelector("#messageBody");
@@ -95,56 +83,138 @@ function ChatRoom({ id }) {
 
   return (
     <div>
-      <div className={classes.main_container} id="messageBody">
-        {Chat_text.length > 0
-          ? Chat_text.map((d, index) => {
-              if (d.Email == localStorage.getItem("email")) {
-                return (
-                  <div key={index}>
-                    <div
-                      style={{
-                        marginBottom: "7px",
-                        textAlign: "right",
-                      }}
-                    >
-                      <Paper
+      <div className={classes.main_container}>
+        <div id="messageBody" style={{ height: "80vh", overflow: "auto" }}>
+          {Chat_text.length > 0
+            ? Chat_text.map((d, index) => {
+                if (d.Email === "krushnkantv1@gmail.com") {
+                  return (
+                    <div key={index}>
+                      <div
                         style={{
-                          display: "inline-block",
-                          maxWidth: "70%",
-                          marginRight: "10px",
-                        }}
-                        className={classes.paper1}
-                      >
-                        {d.Chat_Text}
-                      </Paper>
-                    </div>
-                  </div>
-                );
-              } else {
-                return (
-                  <div key={index}>
-                    <div
-                      style={{
-                        marginBottom: "7px",
-                        textAlign: "left",
-                      }}
-                    >
-                      <Paper
-                        className={classes.paper2}
-                        style={{
-                          display: "inline-block",
-                          maxWidth: "70%",
-                          marginLeft: "10px",
+                          marginBottom: "7px",
+                          textAlign: "right",
                         }}
                       >
-                        {d.Chat_Text}
-                      </Paper>
+                        {d.Chat_Text ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginRight: "10px",
+                            }}
+                            className={classes.paper1}
+                          >
+                            {d.Chat_Text}
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                        {/*  */}
+                        {d.ImageFile ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginRight: "10px",
+                            }}
+                            className={classes.paper}
+                          >
+                            <img
+                              className={classes.img}
+                              src={d.ImageFile}
+                              alt="no image"
+                            />
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                        {/*  */}
+                        {d.OtherFile ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginRight: "10px",
+                            }}
+                            className={classes.paper}
+                          >
+                            <a target="_blank" href={d.OtherFile}>
+                              Download File {<GetAppIcon />}
+                            </a>
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              }
-            })
-          : "Loading..."}
+                  );
+                } else {
+                  return (
+                    <div key={index}>
+                      <div
+                        style={{
+                          marginBottom: "7px",
+                          textAlign: "left",
+                        }}
+                      >
+                        {d.Chat_Text ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginLeft: "10px",
+                            }}
+                            className={classes.paper2}
+                          >
+                            {d.Chat_Text}
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                        {/*  */}
+                        {d.ImageFile ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginLeft: "10px",
+                            }}
+                            className={classes.paper}
+                          >
+                            <img
+                              className={classes.img}
+                              src={d.ImageFile}
+                              alt="no image"
+                            />
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                        {/*  */}
+                        {d.OtherFile ? (
+                          <Paper
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "70%",
+                              marginLeft: "10px",
+                            }}
+                            className={classes.paper}
+                          >
+                            <a target="_blank" href={d.OtherFile}>
+                              Download File {<GetAppIcon />}
+                            </a>
+                          </Paper>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+              })
+            : "Loading..."}
+        </div>
       </div>
       {page}
     </div>

@@ -51,13 +51,12 @@ function Pation() {
           .doc("krushnkantv1@gmail.com")
           .update({ StartChat: "start" })
           .then((h) => {
-            if (h) {
-              // dispatch(Chat_seassion(null));
-              dispatch(AddServiceType(null));
-              dispatch(Selectservice(null));
-              dispatch(Chat_start(null));
-              dispatch(AddEmail(pation_name));
-            }
+            // dispatch(Chat_seassion(null));
+            dispatch(AddServiceType(null));
+            dispatch(Selectservice(null));
+            dispatch(Chat_start(null));
+            dispatch(AddEmail(pation_name));
+            dispatch(Chat_seassion(null));
           });
       }
     }

@@ -9,14 +9,51 @@ import {
   AddServiceType,
   Selectservice,
 } from "../action/Action";
-
+import { Repeat } from "@material-ui/icons";
+let sec = 0;
+let min = 0;
+let hour = 0;
+let stopinterval;
 let db = firebase.firestore();
 function Pation_img({ id }) {
   let dispatch = useDispatch();
   const Select_Servicetype = useSelector((state) => state.Select_Servicetype);
   const Select_Service = useSelector((state) => state.Select_Service);
+  const ChatSession = useSelector((state) => state.ChatSession);
   const Chat = useSelector((state) => state.Chat);
   const [pation, setpation] = useState();
+  const [h, seth] = useState(0);
+  const [m, setm] = useState(0);
+  const [s, sets] = useState(0);
+
+  function startTimer() {
+    stopinterval = setInterval(() => {
+      if (sec >= 60) {
+        sec = 1;
+        min++;
+        sets(0);
+        setm(min);
+      } else {
+        sets(sec++);
+      }
+      if (min >= 59) {
+        min = 0;
+        hour++;
+        setm(min);
+        seth(hour);
+      }
+    }, 1000);
+  }
+
+  let stop = () => {
+    clearInterval(stopinterval);
+    sec = 0;
+    min = 0;
+  };
+  useEffect(() => {
+    console.log(m);
+    // console.log(s);
+  }, [s]);
   useEffect(() => {
     if (id) {
       db.collection("web_user")
@@ -67,6 +104,9 @@ function Pation_img({ id }) {
           .doc("krushnkantv1@gmail.com")
           .set({ StartChat: "stop" }, { merge: true });
         dispatch(Chat_seassion("start"));
+        startTimer();
+        //
+        //
       } else if (Chat === "stop") {
         db.collection("web_user")
           .doc(id)
@@ -74,7 +114,6 @@ function Pation_img({ id }) {
           .doc(Select_Service)
           .get()
           .then((result) => {
-            console.log("sdsdsdsdsdsdsdsdsd", result.data());
             let x = new Date().toISOString().slice(0, 10);
             if (result.data().service_type) {
               db.collection("web_user").doc(id).collection("Histry").add({
@@ -121,6 +160,7 @@ function Pation_img({ id }) {
         dispatch(AddServiceType(null));
         dispatch(Selectservice(null));
         dispatch(Chat_start(null));
+        stop();
       }
     }
   };
@@ -154,6 +194,15 @@ function Pation_img({ id }) {
           onClick={start}
         >
           {Chat}
+        </Button>
+      </h6>
+      <h6>
+        <Button
+          style={{ position: "absolute", right: "100px", top: "5px" }}
+          variant="contained"
+          color="primary"
+        >
+          {`${h}:${m}:${s}`}
         </Button>
       </h6>
     </>
