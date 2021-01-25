@@ -1,7 +1,7 @@
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axios from "axios";
-import api_url from "../api_url";
+
 // Date Fns is used to format the dates we receive
 // from our API call
 import { format } from "date-fns";

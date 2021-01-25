@@ -74,6 +74,8 @@
     "firebase": "^8.2.3",
     "font-awesome": "4.7.0",
     "glyphicons-halflings": "^1.9.1",
+    "jspdf": "^2.3.0",
+    "jspdf-autotable": "^3.5.13",
     "line-awesome": "github:icons8/line-awesome",
     "moment": "^2.22.2",
     "rc-hammerjs": "^0.6.9",

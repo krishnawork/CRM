@@ -76,7 +76,7 @@ function ChatRoom({ id }) {
             setChat_text((old) => [...old, d.data()]);
           });
         } else {
-          setChat_text([{ Chat_Text: "please Stat Chat" }]);
+          setChat_text([{ Chat_Text: "Please Start Chat" }]);
         }
       });
   }, [id]);

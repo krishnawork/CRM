@@ -37,18 +37,16 @@
 const hostApi =
   process.env.NODE_ENV === "development"
     ? "http://mindlyf.com"
-    : "http://mindlyf.com";
-const portApi = process.env.NODE_ENV === "development" ? 8002 : 8002;
+    : "https://api2.mindlyf.com/api/";
+const portApi = process.env.NODE_ENV === "development" ? 8002 : "";
 // const portApi = process.env.NODE_ENV === "development" ? 8080 : 8001;
-const baseURLApi = `${hostApi}${
-  portApi ? `:${portApi}/api/` : `${portApi}/api/`
-}`;
+const baseURLApi = `${hostApi}${portApi ? `:${portApi}/api/` : ""}`;
 
 export default {
   hostApi,
   portApi,
   baseURLApi,
-  remote: "http://mindlyf.com/api/",
+  remote: "https://api2.mindlyf.com/api/",
   isBackend: process.env.REACT_APP_BACKEND,
   auth: {
     email: "admin@gmail.com",
