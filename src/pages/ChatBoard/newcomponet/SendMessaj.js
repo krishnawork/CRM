@@ -1,8 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,42 +7,40 @@ import firebase from "../../../firebase";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import EmojiEmotionsIcon from "@material-ui/icons/EmojiEmotions";
+//
+import Paper from "@material-ui/core/Paper";
+import InputBase from "@material-ui/core/InputBase";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import DirectionsIcon from "@material-ui/icons/Directions";
+//
 import "./SendMessaj.css";
 let db = firebase.firestore();
 let store = firebase.storage();
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    padding: "2px 4px",
+    display: "flex",
+    alignItems: "center",
+    direction: "row",
+    width: 400,
+    marginLeft: "20%",
   },
-  paper1: {
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: "white",
-    fontWeight: "Bold",
-    backgroundColor: "#7b1fa2",
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
   },
-  paper2: {
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: "white",
-    fontWeight: "Bold",
-    backgroundColor: "#689f38",
-    overflowWrap: "break-word",
+  iconButton: {
+    padding: 10,
   },
-  main_container: {
-    padding: "10px",
-    height: "80vh",
-    // border: "2px solid black",
-    overflow: "auto",
+  divider: {
+    height: 28,
+    margin: 4,
   },
-  type_container: {
-    position: "absolute",
-    bottom: "1px",
-  },
-  type_message: {
-    width: "100%",
-  },
+
+  type_message: {},
   sendbtn: {
     height: "100%",
   },
@@ -162,6 +157,7 @@ function SendMessaj({ id }) {
           TimeNow: firebase.firestore.FieldValue.serverTimestamp(),
           Email: "krushnkantv1@gmail.com",
           OtherFile: await fileRef.getDownloadURL(),
+          fileName: file.name,
         })
         .then((r) => {
           setOpen(false);
@@ -174,49 +170,33 @@ function SendMessaj({ id }) {
 
   return (
     <div>
+      {/*  */}
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <form>
-        <Grid container item sm={12} className={classes.type_container}>
-          <Grid item sm={1}>
-            <input
-              type="file"
-              id="fileLoader"
-              name="files"
-              title="Load File"
-              onChange={filedetails}
-            />
-            <Button
-              variant="contained"
-              className={classes.emojibtn}
-              onClick={Showfileselect}
-            >
-              <AttachFileIcon />
-            </Button>
-          </Grid>
-          <Grid item sm={1}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.emojibtn}
-              onClick={Showemoji}
-            >
-              🤨
-            </Button>
-          </Grid>
-          <Grid item sm={9} style={{ padding: "0px 5px" }}>
-            <TextField
-              id="your-msg"
-              value={text}
-              onChange={handleChange}
-              label="Type Your Message"
-              type="text"
-              variant="outlined"
-              className={classes.type_message}
-              autoComplete="off"
-            />
-          </Grid>
+      <Paper component="form" className={classes.root}>
+        <IconButton className={classes.iconButton} aria-label="menu">
+          <AttachFileIcon onClick={Showfileselect} />
+          <InputBase
+            type="file"
+            id="fileLoader"
+            name="files"
+            title="Load File"
+            onChange={filedetails}
+          />
+        </IconButton>
+        <InputBase
+          className={classes.input}
+          placeholder="Type Your Message"
+          id="your-msg"
+          value={text}
+          onChange={handleChange}
+          type="text"
+          variant="outlined"
+          // className={classes.type_message}
+          autoComplete="off"
+        />
+        <IconButton>
           {showemoji ? (
             <div style={{ position: "absolute", bottom: "70px" }}>
               <span>
@@ -226,28 +206,23 @@ function SendMessaj({ id }) {
           ) : (
             ""
           )}
-          {/* <div style={{ position: "absolute", bottom: "70px"  }}>
-            <span>
-              <Picker onSelect={addEmoji} />
-            </span>
-          </div> */}
-
-          <Grid item sm={1}>
-            <button
-              variant="contained"
-              color="primary"
-              value="submit"
-              className={classes.sendbtn}
-              onClick={(e) => {
-                e.preventDefault();
-                Send();
-              }}
-            >
-              Send
-            </button>
-          </Grid>
-        </Grid>
-      </form>
+          <EmojiEmotionsIcon onClick={Showemoji} />
+        </IconButton>
+        <Divider className={classes.divider} orientation="vertical" />
+        <IconButton
+          onClick={(e) => {
+            e.preventDefault();
+            Send();
+          }}
+          type="submit"
+          color="primary"
+          className={classes.iconButton}
+          aria-label="directions"
+        >
+          <DirectionsIcon />
+        </IconButton>
+      </Paper>
+      {/*  */}
     </div>
   );
 }

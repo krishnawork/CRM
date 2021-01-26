@@ -109,13 +109,13 @@ function Paid_test_details({ email }) {
   };
   let pdf_download = (event, pdf_blob) => {
     event.preventDefault();
-    console.log(pdf_blob);
-    if (pdf_blob.includes("blob:")) {
-      FileSaver.saveAs(blob, "test_result.pdf");
-    } else {
-      var blob = new Blob([pdf_blob], { type: "application/pdf" });
-      FileSaver.saveAs(blob, "test_result.pdf");
-    }
+
+    FileSaver.saveAs(pdf_blob, "test_result.pdf");
+    // if (pdf_blob.includes("blob:")) {
+    // } else {
+    //   var blob = new Blob([pdf_blob], { type: "application/pdf" });
+    //   FileSaver.saveAs(blob, "test_result.pdf");
+    // }
   };
 
   return (
@@ -126,66 +126,59 @@ function Paid_test_details({ email }) {
           {selfdata.length > 0
             ? selfdata.map((d, index) => {
                 return (
-                  <Grid item xs={12} sm={6} key={index}>
-                    <Card className={classes.root} variant="outlined">
-                      <CardContent>
-                        <Typography
-                          className={classes.title}
-                          color="textSecondary"
-                          gutterBottom
-                        >
-                          {d.data().Test}
-                        </Typography>
-                        <input
-                          type="file"
-                          id="fileLoader"
-                          name="files"
-                          title="Load File"
-                          onChange={filedetails}
-                        />
-                        <Typography variant="h5" component="h2">
-                          {d.data().TimeNow}
-                        </Typography>
-                        <Typography
-                          className={classes.pos}
-                          color="textSecondary"
-                        >
-                          Test_type: <br />
-                          {d.data().Test_type}
-                          <br />
-                        </Typography>
-                        <Typography variant="body2" component="p">
-                          <br />
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
+                  <Card className={classes.root} variant="outlined">
+                    <CardContent>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        {d.data().Test}
+                      </Typography>
+                      <input
+                        type="file"
+                        id="fileLoader"
+                        name="files"
+                        title="Load File"
+                        onChange={filedetails}
+                      />
+                      <Typography variant="h5" component="h2">
+                        {d.data().TimeNow}
+                      </Typography>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Test_type: <br />
+                        {d.data().Test_type}
+                        <br />
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        <br />
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        onClick={(e) => pdf_download(e, d.data().question_pdf)}
+                      >
+                        DownLoad PDF{" "}
+                      </Button>
+                      {d.data().Upload_file ? (
                         <Button
                           size="small"
-                          onClick={(e) =>
-                            pdf_download(e, d.data().question_pdf)
-                          }
+                          onClick={() => Showfileselect(d.id)}
                         >
-                          DownLoad PDF{" "}
+                          Upload PDF
                         </Button>
-                        {d.data().Upload_file ? (
-                          <Button
-                            size="small"
-                            onClick={() => Showfileselect(d.id)}
-                          >
-                            Upload PDF
-                          </Button>
-                        ) : (
-                          <Button
-                            size="small"
-                            color="secondary"
-                            onClick={() => Showfileselect(d.id)}
-                          >
-                            Upload PDF
-                          </Button>
-                        )}
-                      </CardActions>
-                    </Card>
-                  </Grid>
+                      ) : (
+                        <Button
+                          size="small"
+                          color="secondary"
+                          onClick={() => Showfileselect(d.id)}
+                        >
+                          Upload PDF
+                        </Button>
+                      )}
+                    </CardActions>
+                  </Card>
                 );
               })
             : Loadind}

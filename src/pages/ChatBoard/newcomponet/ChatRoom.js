@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
   main_container: {
     padding: "10px",
     height: "83vh",
-    // border: "2px solid black",
-    // overflow: "auto",
   },
   type_container: {
     position: "absolute",
@@ -140,7 +138,7 @@ function ChatRoom({ id }) {
                             className={classes.paper}
                           >
                             <a target="_blank" href={d.OtherFile}>
-                              Download File {<GetAppIcon />}
+                              {d.fileName} {<GetAppIcon />}
                             </a>
                           </Paper>
                         ) : (
@@ -202,7 +200,7 @@ function ChatRoom({ id }) {
                             className={classes.paper}
                           >
                             <a target="_blank" href={d.OtherFile}>
-                              Download File {<GetAppIcon />}
+                              {d.fileName} {<GetAppIcon />}
                             </a>
                           </Paper>
                         ) : (
@@ -216,7 +214,7 @@ function ChatRoom({ id }) {
             : "Loading..."}
         </div>
       </div>
-      {page}
+      <div>{page}</div>
     </div>
   );
 }

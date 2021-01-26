@@ -3,7 +3,7 @@
 }
 .sidebox_firstbox {
   height: 100vh;
-  background-color: #302f4a;
+  background-color: #273238;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
   padding-top: 20px;
@@ -33,7 +33,7 @@
   border: 1px solid #ccd3de;
   display: flex;
   align-items: center;
-  background-color: #f9f7fd;
+  background-color: #399be4;
 }
 .link_test {
   text-decoration: none;
