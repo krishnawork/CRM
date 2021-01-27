@@ -84,20 +84,6 @@ function New() {
                 <Grid item style={{ marginBottom: "20px" }}>
                   <Avatar alt="K" src="/static/images/avatar/1.jpg" />
                 </Grid>
-                <Grid item style={{ marginBottom: "20px" }}>
-                  <NavLink exact to="/chatboard" className="link_test">
-                    <Paper>
-                      <ChatBubbleIcon />
-                    </Paper>
-                  </NavLink>
-                </Grid>
-                <Grid item style={{ marginBottom: "20px" }}>
-                  <Link to="/chatboard" className="link_test">
-                    <Paper>
-                      <LocalGroceryStoreIcon />
-                    </Paper>
-                  </Link>
-                </Grid>
               </Grid>
             </Grid>
             {/*  */}

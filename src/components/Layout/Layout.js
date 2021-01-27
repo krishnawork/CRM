@@ -34,6 +34,7 @@ import Icons from "../../pages/icons";
 import Tables from "../../pages/tables";
 import Charts from "../../pages/charts";
 import ChatBoard from "../../pages/ChatBoard/ChatBoard";
+import ReportGenerator from "../../reportGenerator";
 
 class Layout extends React.Component {
   static propTypes = {
@@ -152,6 +153,7 @@ class Layout extends React.Component {
                     <Route path="/app/main/billing" exact component={Billing} />
                     <Route path="/app/main/payment" component={Payment} />
                     <Route path="/app/main/test" exact component={Test} />
+
                     <Route
                       path="/app/main/chatBoard"
                       exact

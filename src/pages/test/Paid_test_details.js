@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import FileSaver from "file-saver";
-// import generatePDF from "../../reportGenerator";
+import generatePDF from "../../reportGenerator";
 let db = firebase.firestore();
 let store = firebase.storage();
 //
@@ -118,6 +118,15 @@ function Paid_test_details({ email }) {
     // }
   };
 
+  //
+  let GeneratePDF = (data, type) => {
+    if (localStorage.getItem("type") === type) {
+      generatePDF(data);
+    } else {
+    }
+  };
+
+  //
   return (
     <div>
       <div>
@@ -157,7 +166,10 @@ function Paid_test_details({ email }) {
                     <CardActions>
                       <Button
                         size="small"
-                        onClick={(e) => pdf_download(e, d.data().question_pdf)}
+                        onClick={() => {
+                          localStorage.setItem("type", d.data().Test_type);
+                          GeneratePDF(d.data().Details, d.data().Test_type);
+                        }}
                       >
                         DownLoad PDF{" "}
                       </Button>
