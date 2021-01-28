@@ -53,7 +53,13 @@ export function createBlog(data) {
   console.log(config.baseURLApi + "create_blog");
   return (dispatch) => {
     const formData = new FormData();
-    formData.append("myImage", data.image);
+    if (data.updateImage) {
+      formData.append("myImage", data.image);
+      formData.append("updateImage", "true");
+    } else {
+      formData.append("updateImage", "false");
+    }
+
     formData.append("title", data.title);
     formData.append("description", data.description);
     console.log(formData);
