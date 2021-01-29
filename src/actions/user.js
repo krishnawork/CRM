@@ -3,6 +3,9 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import config from "../config.js";
 import { Redirect } from "react-router";
+import firebase from "../firebase";
+let db = firebase.firestore();
+
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
 export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
@@ -188,6 +191,8 @@ export function createUser(userData) {
           fname: userData.fname,
           lname: userData.lname,
           number: userData.number,
+          gender: userData.gender,
+          address: userData.address,
           password: userData.password,
           user_type: userData.user_type,
           type: userData.type,
