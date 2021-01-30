@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "reactstrap";
+import { useSelector, useDispatch } from "react-redux";
 import firebase from "../../../firebase";
+import { AddProgramAmount, AddProgramName } from "../action/Action";
 
 let db = firebase.firestore();
 
@@ -9,9 +11,10 @@ function Product() {
   const [selectproductname, setselectproductname] = useState(null);
   const [session, setsession] = useState([]);
   const [selectsession, setselectsession] = useState(1);
-  const [amount, setamount] = useState();
+  const [amount, setamount] = useState(null);
+  const dispatch = useDispatch();
   useEffect(() => {
-    db.collection("Service")
+    db.collection("Program")
       .get()
       .then((res) => {
         res.forEach((d) => {
@@ -28,15 +31,29 @@ function Product() {
       });
   }, []);
   useEffect(() => {
-    if (selectsession) {
+    if (
+      selectproductname === "Please Select Program Name" ||
+      selectproductname === null
+    ) {
+      setamount(null);
+      dispatch(AddProgramAmount(null));
+      dispatch(AddProgramName(null));
+    } else {
       db.collection("Session")
-        .doc(`${selectsession}`)
+        .doc(`5`)
         .get()
         .then((res) => {
-          setamount(res.data().amount);
+          if (res.exists) {
+            setamount(res.data().amount);
+            dispatch(AddProgramAmount(amount));
+          } else {
+            setamount(null);
+            dispatch(AddProgramAmount(amount));
+          }
         });
+      dispatch(AddProgramName(selectproductname));
     }
-  }, [selectsession]);
+  }, [selectproductname, amount]);
   return (
     <>
       {productname ? (
@@ -55,7 +72,7 @@ function Product() {
               <option value={null}>Please Select Program Name</option>
               {productname.length > 0
                 ? productname.map((d) => {
-                    return <option value={d.value}>{d.value}</option>;
+                    return <option>{d.value}</option>;
                   })
                 : ""}
             </select>
@@ -68,22 +85,10 @@ function Product() {
         <>
           <Col xl={6}>
             <div className="form-group">
-              <label htmlFor="email">Select Seassion</label>
-              <select
-                style={{
-                  height: "40px",
-                  width: "100%",
-                  border: "1px solid gray",
-                }}
-                onChange={(e) => setselectsession(e.target.value)}
-              >
-                {session.map((d) => {
-                  return <option value={d.seassion}>{d.seassion}</option>;
-                })}
-              </select>
+              <label htmlFor="email">Session</label>
+              <input type="text" value="5" className="in_T" disabled />
             </div>
           </Col>
-
           <Col xl={6}>
             <div className="form-group">
               <label htmlFor="email">Amount</label>

@@ -5,10 +5,15 @@ import TextField from "@material-ui/core/TextField";
 import { Height } from "@material-ui/icons";
 import Service from "./Service/Service";
 import Product from "./Product/Product";
+import Paid from "./Paid/Paid";
+import { fname, lname, mnumber } from "./action/Action";
+import { useSelector, useDispatch } from "react-redux";
+
 import "./Billing_details.css";
 let db = firebase.firestore();
 function Billing_details({ id }) {
   const [user_details, setuser_details] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (id) {
@@ -19,6 +24,13 @@ function Billing_details({ id }) {
           setuser_details([]);
           if (res) {
             setuser_details((old) => [...old, res.data()]);
+            dispatch(fname(res.data().fname));
+            if (res.data().lname) {
+              dispatch(lname(res.data().lname));
+            }
+            if (res.data().number) {
+              dispatch(mnumber(res.data().number));
+            }
           }
         });
 
@@ -80,6 +92,10 @@ function Billing_details({ id }) {
               {/*  */}
 
               <Product />
+              <Col xl={12}>
+                <hr />
+              </Col>
+              <Paid />
               <Col xl={12}>
                 <hr />
               </Col>

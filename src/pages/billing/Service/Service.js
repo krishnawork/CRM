@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "reactstrap";
 import firebase from "../../../firebase";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  AddServiceAmount,
+  AddServiceName,
+  AddServiceProductName,
+  AddServiceSession,
+} from "../action/Action";
 
 let db = firebase.firestore();
 
@@ -8,9 +15,14 @@ function Service() {
   const [servicename, setservicename] = useState([]);
   const [selectservicename, setselectservicename] = useState(null);
   const [serviceproduct, setserviceproduct] = useState([]);
+  const [selectserviceproductname, setselectserviceproductname] = useState(
+    null
+  );
   const [session, setsession] = useState([]);
   const [selectsession, setselectsession] = useState(1);
-  const [amount, setamount] = useState();
+  const [amount, setamount] = useState(null);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     db.collection("Service")
       .get()
@@ -30,7 +42,15 @@ function Service() {
   }, []);
 
   useEffect(() => {
-    if (selectservicename) {
+    if (
+      selectservicename === "Please Select Service Name" ||
+      selectservicename === null
+    ) {
+      dispatch(AddServiceAmount(null));
+      dispatch(AddServiceName(null));
+      dispatch(AddServiceSession(null));
+      setserviceproduct([]);
+    } else {
       db.collection("Service")
         .doc(selectservicename)
         .collection("Package")
@@ -40,18 +60,35 @@ function Service() {
             setserviceproduct((old) => [...old, d.data()]);
           });
         });
+      dispatch(AddServiceAmount(amount));
+      dispatch(AddServiceName(selectservicename));
+      dispatch(AddServiceSession(selectsession));
     }
-  }, [selectservicename]);
+  }, [selectservicename, amount]);
   useEffect(() => {
     if (selectsession) {
       db.collection("Session")
         .doc(`${selectsession}`)
         .get()
         .then((res) => {
-          setamount(res.data().amount);
+          if (res.exists) {
+            setamount(res.data().amount);
+          } else {
+            setamount(null);
+          }
         });
     }
   }, [selectsession]);
+  useEffect(() => {
+    if (
+      selectserviceproductname === null ||
+      selectserviceproductname === "Please Select Product"
+    ) {
+      dispatch(AddServiceProductName(null));
+    } else {
+      dispatch(AddServiceProductName(selectserviceproductname));
+    }
+  }, [selectserviceproductname]);
   return (
     <>
       {servicename ? (
@@ -67,7 +104,7 @@ function Service() {
               id="service_product"
               onChange={(e) => setselectservicename(e.target.value)}
             >
-              <option value={null}>Please Service Name</option>
+              <option value={null}>Please Select Service Name</option>
               {servicename.length > 0
                 ? servicename.map((d) => {
                     return <option value={d.value}>{d.value}</option>;
@@ -90,6 +127,7 @@ function Service() {
                 width: "100%",
                 border: "1px solid gray",
               }}
+              onChange={(e) => setselectserviceproductname(e.target.value)}
             >
               <option value={null}>Please Select Product</option>
               {serviceproduct.length > 0
