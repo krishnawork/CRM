@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { Button } from "reactstrap";
 import firebase from "../../firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import FileSaver from "file-saver";
-import generatePDF from "../../reportGenerator";
+import EditIcon from "@material-ui/icons/Edit";
 let db = firebase.firestore();
-let store = firebase.storage();
+
 //
 const useStyles = makeStyles((theme) => ({
+  root: {},
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
@@ -29,33 +27,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 //
 
-function Paid_test_details({ email }) {
+function Paid_test_details({ email, setsetbill }) {
   const classes = useStyles();
-  const [Loadind, setLoadind] = useState("Loading");
+  const [Loadind, setLoadind] = useState(null);
   const [selfdata, setselfdata] = useState([]);
   const [offlineselfdata, setofflineselfdata] = useState([]);
-  useEffect(() => {
-    if (email) {
-      setselfdata([]);
-      db.collection("All_order")
-        .doc(email)
-        .collection("order")
-        .orderBy("BillNo", "desc")
-        .onSnapshot((result) => {
-          setselfdata([]);
-          if (!result.empty) {
-            result.forEach((d) => {
-              setselfdata((old) => [...old, d]);
-            });
-          } else {
-            setLoadind("Data Not Available");
-          }
-        });
-    }
-    return () => {
-      setLoadind("Loading");
-    };
-  }, [email]);
 
   useEffect(() => {
     if (email) {
@@ -71,6 +47,7 @@ function Paid_test_details({ email }) {
               setofflineselfdata((old) => [...old, d]);
             });
           } else {
+            setLoadind("Data Not Found");
           }
         });
     }
@@ -79,54 +56,13 @@ function Paid_test_details({ email }) {
     };
   }, [email]);
 
+  let setbillid = (id) => {
+    setsetbill(id);
+  };
+
   return (
     <div>
       <div>
-        {selfdata.length > 0
-          ? selfdata.map((d, index) => {
-              return (
-                <div
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    width: " 400px",
-                    margin: "10px",
-                  }}
-                >
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        BillNo : {d.data().BillNo}
-                      </Typography>
-
-                      <Typography variant="h5" component="h2">
-                        {d.data().service_name ? d.data().service_name : ""}
-                        {d.data().test_name ? d.data().test_name : ""}
-                      </Typography>
-                      <Typography className={classes.pos} color="textSecondary">
-                        Type: <br />
-                        {d.data().service_type ? d.data().service_type : ""}
-                        {d.data().test_type ? d.data().test_type : ""}
-                        <br />
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        recieved amount : {d.data().amount}
-                        <br />
-                        {d.data().pending_amount
-                          ? `pending amount : ${d.data().pending_amount}`
-                          : ""}
-                      </Typography>
-                    </CardContent>
-                    <CardActions></CardActions>
-                  </Card>
-                </div>
-              );
-            })
-          : ""}
         {/*  */}
         {offlineselfdata.length > 0
           ? offlineselfdata.map((d, index) => {
@@ -135,7 +71,7 @@ function Paid_test_details({ email }) {
                   key={index}
                   style={{
                     display: "inline-block",
-                    width: " 400px",
+                    width: " 100%",
                     margin: "10px",
                   }}
                 >
@@ -169,19 +105,42 @@ function Paid_test_details({ email }) {
                       </Typography>
 
                       <Typography variant="body2" component="p">
-                        recieved amount : {d.data().payAmount}
+                        Total amount : {d.data().TotalAmoutn}
+                        <br />
+                        Recieved amount : {d.data().payAmount}
                         <br />
                         {d.data().pandingAmount > 0
-                          ? `pending amount : ${d.data().pandingAmount}`
+                          ? `Pending amount : ${d.data().pandingAmount}`
                           : ""}
                       </Typography>
                     </CardContent>
-                    <CardActions></CardActions>
+                    <CardActions>
+                      {/* <button onClick={() => setbillid(d.id)}>Edit</button> */}
+                      {d.data().pandingAmount > 0 ? (
+                        <Button
+                          // style={{ position: "relative", width: "100px" }}
+                          color="primary"
+                          onClick={() => setbillid(d.id)}
+                        >
+                          Edit{" "}
+                          {/* <EditIcon
+                            style={{
+                              position: "absolute",
+                              fontSize: "15px",
+                              top: "0",
+                              right: "10",
+                            }}
+                          /> */}
+                        </Button>
+                      ) : (
+                        ""
+                      )}
+                    </CardActions>
                   </Card>
                 </div>
               );
             })
-          : ""}
+          : Loadind}
         {/*  */}
       </div>
     </div>

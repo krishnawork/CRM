@@ -22,7 +22,7 @@ function Billing_details({ id }) {
         .get()
         .then((res) => {
           setuser_details([]);
-          if (res) {
+          if (res.exists) {
             setuser_details((old) => [...old, res.data()]);
             dispatch(fname(res.data().fname));
             if (res.data().lname) {
@@ -51,7 +51,7 @@ function Billing_details({ id }) {
                   <label htmlFor="email">FirstName</label>
                   <input
                     type="text"
-                    value={d.fname}
+                    value={d.fname ? d.fname : ""}
                     className="in_T"
                     disabled
                   />
@@ -62,7 +62,7 @@ function Billing_details({ id }) {
                   <label htmlFor="email">LastName</label>
                   <input
                     type="text"
-                    value={d.lname}
+                    value={d.lname ? d.lname : ""}
                     className="in_T"
                     placeholder=""
                     disabled

@@ -33,6 +33,7 @@ function New() {
   let UserEmail_id = useSelector((state) => state.User_Email_id);
   const Select_Service = useSelector((state) => state.Select_Service);
   const Select_Servicetype = useSelector((state) => state.Select_Servicetype);
+  const chatstart = useSelector((state) => state.ChatSession);
   console.log(UserEmail_id, Select_Service, Select_Servicetype);
 
   const [page2, setpage2] = useState(null);
@@ -54,12 +55,12 @@ function New() {
 
   //
   useEffect(() => {
-    if (Select_Service && Select_Servicetype) {
+    if ((Select_Service && Select_Servicetype) || chatstart === "start") {
       setpage2(<ChatRoom id={UserEmail_id} />);
     } else {
       setpage2(<UserDetails id={UserEmail_id} />);
     }
-  }, [Select_Service, Select_Servicetype]);
+  }, [Select_Service, Select_Servicetype, chatstart]);
 
   return (
     <div style={{ marginBottom: "50px" }}>

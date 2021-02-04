@@ -150,12 +150,13 @@ export default function Billing() {
   //
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [openb, setOpenb] = React.useState(false);
-  const [expanded, setExpanded] = React.useState(false);
+  const [openb, setOpenb] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [orderdata, setorderdata] = useState([]);
   const [modal, setmodal] = useState(false);
   const [web_user, setweb_user] = useState([]);
   const [patient_email, setpatient_email] = useState(null);
+  const [payment, setpayment] = useState(null);
   const servceamount = useSelector((state) => state.servceamount);
   const programamount = useSelector((state) => state.programamount);
   const paidamamount = useSelector((state) => state.paidamamount);
@@ -207,8 +208,8 @@ export default function Billing() {
   }, []);
   //
   let submitbill = () => {
+    setOpenb(true);
     if ((patient_email && servicename) || programname || paidtestname) {
-      setOpenb(true);
       db.collection("All_order")
         .doc(patient_email)
         .set(
@@ -216,6 +217,8 @@ export default function Billing() {
             fname: fname,
             lname: lname,
             number: mnumber,
+            email: `${patient_email ? patient_email : "fname"}`,
+            offline: "offline",
           },
           { merge: true }
         )
@@ -236,6 +239,16 @@ export default function Billing() {
                 programamount: programamount,
                 paidtestname: paidtestname,
                 paidamamount: paidamamount,
+                TotalAmoutn:
+                  Number(servceamount) +
+                  Number(programamount) +
+                  Number(paidamamount),
+                payAmount: Number(payment),
+                pandingAmount:
+                  Number(servceamount) +
+                  Number(programamount) +
+                  Number(paidamamount) -
+                  Number(payment),
               })
               .then((res) => {
                 db.collection("web_user")
@@ -253,6 +266,10 @@ export default function Billing() {
                     programamount: programamount,
                     paidtestname: paidtestname,
                     paidamamount: paidamamount,
+                    TotalAmoutn:
+                      Number(servceamount) +
+                      Number(programamount) +
+                      Number(paidamamount),
                   })
                   .then((r) => {
                     incress("fild1", result);
@@ -293,18 +310,29 @@ export default function Billing() {
         <ModalHeader>Creat New Bill</ModalHeader>
         <ModalBody>
           <Row>
+            {/* <Col xl={6}>
+              <input type="text" list="cars" />
+              <datalist id="cars">
+                <option>Volvo</option>
+                <option>Saab</option>
+                <option>Mercedes</option>
+                <option>Audi</option>
+              </datalist>
+            </Col> */}
             <Col xl={6}>
               <div className="form-group">
                 <label htmlFor="email">Please Select Email Address</label>
-                <select
+                <input
+                  type="text"
+                  list="patient"
                   style={{
                     height: "40px",
                     width: "100%",
                     border: "1px solid gray",
                   }}
                   onChange={(event) => setpatient_email(event.target.value)}
-                >
-                  <option value={null}> Please Select Email</option>
+                />
+                <datalist id="patient">
                   {web_user.length > 0
                     ? web_user.map((d) => {
                         return (
@@ -314,7 +342,7 @@ export default function Billing() {
                         );
                       })
                     : "loading.."}
-                </select>
+                </datalist>
               </div>
             </Col>
             <Billing_details id={patient_email} />
@@ -334,6 +362,16 @@ export default function Billing() {
                   }
                   disabled
                   // onChange={(event) => this.onEmailChange(event)}
+                />
+              </div>
+            </Col>
+            <Col xl={6}>
+              <div className="form-group">
+                <label htmlFor="email">Pay Amount</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  onChange={(event) => setpayment(event.target.value)}
                 />
               </div>
             </Col>

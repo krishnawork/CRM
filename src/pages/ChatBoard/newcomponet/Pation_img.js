@@ -21,6 +21,7 @@ function Pation_img({ id }) {
   const Select_Service = useSelector((state) => state.Select_Service);
   const ChatSession = useSelector((state) => state.ChatSession);
   const Chat = useSelector((state) => state.Chat);
+  const timerstop = useSelector((state) => state.ChatSession);
   const [pation, setpation] = useState();
   const [h, seth] = useState(0);
   const [m, setm] = useState(0);
@@ -69,6 +70,12 @@ function Pation_img({ id }) {
   }, [id]);
 
   useEffect(() => {
+    if (ChatSession === null) {
+      stop();
+    }
+  }, [timerstop]);
+
+  useEffect(() => {
     db.collection("web_user")
       .doc(id)
       .collection("ChatRoom")
@@ -95,7 +102,26 @@ function Pation_img({ id }) {
   let start = () => {
     let seassion;
     if (Select_Servicetype === null && Select_Service === null) {
-      alert("Please Select Product");
+      if (Chat === "start") {
+        db.collection("web_user")
+          .doc(id)
+          .collection("ChatRoom")
+          .doc("krushnkantv1@gmail.com")
+          .set({ StartChat: "stop" }, { merge: true });
+        dispatch(Chat_seassion("start"));
+        startTimer();
+      } else if (Chat === "stop") {
+        db.collection("web_user")
+          .doc(id)
+          .collection("ChatRoom")
+          .doc("krushnkantv1@gmail.com")
+          .set({ StartChat: "start" }, { merge: true });
+        dispatch(Chat_seassion(null));
+        dispatch(AddServiceType(null));
+        dispatch(Selectservice(null));
+        dispatch(Chat_start(null));
+        stop();
+      }
     } else if (Select_Servicetype && Select_Service) {
       if (Chat === "start") {
         db.collection("web_user")
