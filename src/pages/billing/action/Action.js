@@ -88,3 +88,27 @@ export const mnumber = (name) => {
     },
   };
 };
+export const updatebillemail = (email) => {
+  return {
+    type: "ADD_UPDATE_EMAIL",
+    payload: {
+      email: email,
+    },
+  };
+};
+export const updatebillid = (id) => {
+  return {
+    type: "ADD_UPDATE_ID",
+    payload: {
+      id: id,
+    },
+  };
+};
+export const editbill = (id) => {
+  return {
+    type: "EDIT_BILL",
+    payload: {
+      id: id,
+    },
+  };
+};

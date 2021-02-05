@@ -71,7 +71,8 @@ function Paid_test_details({ email, setsetbill }) {
                   key={index}
                   style={{
                     display: "inline-block",
-                    width: " 100%",
+                    width: " 400px",
+
                     margin: "10px",
                   }}
                 >
@@ -89,7 +90,11 @@ function Paid_test_details({ email, setsetbill }) {
                         <div style={{ clear: "both" }}></div>
                       </Typography>
 
-                      <Typography className={classes.pos} color="textSecondary">
+                      <Typography
+                        className={classes.pos}
+                        color="textSecondary"
+                        style={{ height: "100px" }}
+                      >
                         {d.data().servicename
                           ? `Service Name:` + d.data().servicename
                           : ""}
@@ -120,7 +125,9 @@ function Paid_test_details({ email, setsetbill }) {
                         <Button
                           // style={{ position: "relative", width: "100px" }}
                           color="primary"
-                          onClick={() => setbillid(d.id)}
+                          onClick={() => {
+                            setbillid(d.id);
+                          }}
                         >
                           Edit{" "}
                           {/* <EditIcon

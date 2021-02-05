@@ -35,7 +35,8 @@ class BreadcrumbHistory extends Component {
           {item}
         </BreadcrumbItem>
       ) : (
-        <BreadcrumbItem key={uuid()}>{item}</BreadcrumbItem>
+        ""
+        // <BreadcrumbItem key={uuid()}>{item}</BreadcrumbItem>
       )
     );
   };
@@ -51,7 +52,10 @@ class BreadcrumbHistory extends Component {
               </Breadcrumb>
             </Col>
             {this.props.url === "/app/main/dashboard" ? (
-              <Col lg={7} className={`d-flex align-items-start justify-content-center pr-0 ${s.dashboardButtons} mt-1`}>
+              <Col
+                lg={7}
+                className={`d-flex align-items-start justify-content-center pr-0 ${s.dashboardButtons} mt-1`}
+              >
                 <UncontrolledButtonDropdown className={"ml-lg-auto ml-md-0"}>
                   <DropdownToggle
                     caret

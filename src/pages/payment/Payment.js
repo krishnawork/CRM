@@ -30,7 +30,7 @@ function Payment() {
       });
   }, []);
   useEffect(() => {
-    if (patient_email && setbill)
+    if (patient_email && setbill) {
       db.collection("All_order")
         .doc(patient_email)
         .collection("Offline")
@@ -44,6 +44,7 @@ function Payment() {
             setbilldetailsPanding(res.data().pandingAmount);
           }
         });
+    }
   }, [setbill, patient_email]);
 
   let paymentdone = () => {
@@ -83,7 +84,7 @@ function Payment() {
   };
 
   return (
-    <div>
+    <div id="scrollTop">
       <div>
         <ToastContainer />
         <Row>

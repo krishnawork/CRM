@@ -13,19 +13,21 @@ let db = firebase.firestore();
 
 function Service() {
   const servicename_edit = useSelector((state) => state.servicename);
+  const serviceproductname_edit = useSelector(
+    (state) => state.serviceproductname
+  );
+  const servicesession = useSelector((state) => state.servicesession);
   const [servicename, setservicename] = useState([]);
-  const [selectservicename, setselectservicename] = useState(null);
+  const [selectservicename, setselectservicename] = useState(servicename_edit);
   const [serviceproduct, setserviceproduct] = useState([]);
   const [selectserviceproductname, setselectserviceproductname] = useState(
-    null
+    serviceproductname_edit
   );
   const [session, setsession] = useState([]);
-  const [selectsession, setselectsession] = useState(1);
+  const [selectsession, setselectsession] = useState(servicesession);
   const [amount, setamount] = useState(null);
   const dispatch = useDispatch();
-  //
 
-  //
   useEffect(() => {
     db.collection("Service")
       .get()
@@ -107,6 +109,7 @@ function Service() {
               id="service_product"
               onChange={(e) => setselectservicename(e.target.value)}
             >
+              <option value={selectservicename}>{selectservicename}</option>
               <option value={null}>Please Select Service Name</option>
               {servicename.length > 0
                 ? servicename.map((d) => {
@@ -132,6 +135,9 @@ function Service() {
               }}
               onChange={(e) => setselectserviceproductname(e.target.value)}
             >
+              <option value={selectserviceproductname}>
+                {selectserviceproductname}
+              </option>
               <option value={null}>Please Select Product</option>
               {serviceproduct.length > 0
                 ? serviceproduct.map((d) => {
@@ -156,6 +162,7 @@ function Service() {
               }}
               onChange={(e) => setselectsession(e.target.value)}
             >
+              <option value={selectsession}>{selectsession}</option>
               {session.map((d) => {
                 return <option value={d.seassion}>{d.seassion}</option>;
               })}

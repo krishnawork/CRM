@@ -1,39 +1,61 @@
 import React, { useState, useEffect } from "react";
+import {
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Table,
+  Button,
+} from "reactstrap";
 import firebase from "../../firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import FileSaver from "file-saver";
 import generatePDF from "../../reportGenerator";
+import { useSelector, useDispatch } from "react-redux";
+import Billing_details_Edit from "./Billing_details_Edit";
+import Swal from "sweetalert2";
+import {
+  AddServiceAmount,
+  AddServiceName,
+  AddServiceProductName,
+  AddServiceSession,
+  AddProgramName,
+  AddPaidTestName,
+  updatebillid,
+} from "./action/Action";
+
 let db = firebase.firestore();
 let store = firebase.storage();
 //
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-    borderRadius: 10,
-    height: 50,
-    cursor: "pointer",
-  },
-
-  white: {
-    color: "white",
-  },
-}));
+const useStyles = makeStyles((theme) => ({}));
 //
 
 function Paid_test_details({ email }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [Loadind, setLoadind] = useState("Loading");
   const [selfdata, setselfdata] = useState([]);
   const [offlineselfdata, setofflineselfdata] = useState([]);
+  const [modal, setmodal] = useState(false);
+  const [patient_email, setpatient_email] = useState(null);
+  const [payment, setpayment] = useState(null);
+  const servceamount = useSelector((state) => state.servceamount);
+  const programamount = useSelector((state) => state.programamount);
+  const paidamamount = useSelector((state) => state.paidamamount);
+  const servicename = useSelector((state) => state.servicename);
+  const serviceproductname = useSelector((state) => state.serviceproductname);
+  const servicesession = useSelector((state) => state.servicesession);
+  const programname = useSelector((state) => state.programname);
+  const paidtestname = useSelector((state) => state.paidtestname);
+  const updatebill_id = useSelector((state) => state.updatebillid);
   useEffect(() => {
     if (email) {
       setselfdata([]);
@@ -78,9 +100,157 @@ function Paid_test_details({ email }) {
       setLoadind("Loading");
     };
   }, [email]);
+  let toggle = () => {
+    setmodal(!modal);
+  };
+  let EditBill = (id) => {
+    setmodal(!modal);
+    dispatch(updatebillid(id));
+    // dispatch(updatebillemail(email));
+    // dispatch(editbill(true));
+
+    db.collection("All_order")
+      .doc(email)
+      .collection("Offline")
+      .doc(id)
+      .get()
+      .then((result) => {
+        if (result.exists) {
+          dispatch(AddServiceName(result.data().servicename));
+          dispatch(AddServiceProductName(result.data().serviceproductname));
+          dispatch(AddServiceSession(result.data().servicesession));
+          dispatch(AddServiceAmount(result.data().servceamount));
+          dispatch(AddProgramName(result.data().programname));
+          dispatch(AddPaidTestName(result.data().paidtestname));
+          setpayment(result.data().payAmount);
+        }
+      });
+  };
+  //
+  let DeleteBill = (id) => {
+    if (window.confirm("Delete the item?")) {
+      db.collection("All_order")
+        .doc(email)
+        .collection("Offline")
+        .doc(id)
+        .delete()
+        .then((result) => {
+          Swal.fire({
+            icon: "success",
+            type: "success",
+            text: "Delete successfully!",
+            showConfirmButton: true,
+            timer: 3500,
+          });
+        });
+    }
+  };
+
+  //
+  let submitbill = () => {
+    db.collection("All_order")
+      .doc(email)
+      .collection("Offline")
+      .doc(updatebill_id)
+      .update({
+        servicename: servicename,
+        serviceproductname: serviceproductname,
+        servicesession: servicesession,
+        servceamount: servceamount,
+        programname: programname,
+        programsession: 4,
+        programamount: programamount,
+        paidtestname: paidtestname,
+        paidamamount: paidamamount,
+        TotalAmoutn:
+          Number(servceamount) + Number(programamount) + Number(paidamamount),
+        payAmount: Number(payment),
+        pandingAmount:
+          Number(servceamount) +
+          Number(programamount) +
+          Number(paidamamount) -
+          Number(payment),
+      })
+      .then((res) => {
+        Swal.fire({
+          icon: "success",
+          type: "success",
+          text: "Update successfully!",
+          showConfirmButton: true,
+          timer: 3500,
+        }).then(() => {
+          setmodal(false);
+        });
+      });
+  };
 
   return (
     <div>
+      {/* Modal */}
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader>Creat New Bill</ModalHeader>
+        <ModalBody>
+          <Row>
+            <Col xl={6}>
+              <div className="form-group">
+                <label htmlFor="email">Patient Email Address</label>
+                <input
+                  type="text"
+                  list="patient"
+                  style={{
+                    height: "40px",
+                    width: "100%",
+                    border: "1px solid gray",
+                  }}
+                  value={email}
+                />
+              </div>
+            </Col>
+            <Billing_details_Edit id={email} />
+          </Row>
+        </ModalBody>
+        <ModalFooter>
+          <Row>
+            <Col xl={6}>
+              <div className="form-group">
+                <label htmlFor="email">Total Amount</label>
+                <input
+                  className="form-control"
+                  value={
+                    Number(servceamount) +
+                    Number(programamount) +
+                    Number(paidamamount)
+                  }
+                  disabled
+                />
+              </div>
+            </Col>
+            <Col xl={6}>
+              <div className="form-group">
+                <label htmlFor="email">Pay Amount</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  value={payment}
+                  onChange={(event) => setpayment(event.target.value)}
+                />
+              </div>
+            </Col>
+            <Col xl={6}>
+              <div className="form-group">
+                <Button
+                  style={{ marginTop: "30px" }}
+                  color="primary"
+                  onClick={submitbill}
+                >
+                  Edit Bill
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </ModalFooter>
+      </Modal>
+      {/* Modal */}
       <div>
         {selfdata.length > 0
           ? selfdata.map((d, index) => {
@@ -90,6 +260,7 @@ function Paid_test_details({ email }) {
                   style={{
                     display: "inline-block",
                     width: " 400px",
+
                     margin: "10px",
                   }}
                 >
@@ -103,7 +274,11 @@ function Paid_test_details({ email }) {
                         BillNo : {d.data().BillNo}
                       </Typography>
 
-                      <Typography variant="h5" component="h2">
+                      <Typography
+                        variant="h5"
+                        component="h2"
+                        style={{ height: "111px" }}
+                      >
                         {d.data().service_name ? d.data().service_name : ""}
                         {d.data().test_name ? d.data().test_name : ""}
                       </Typography>
@@ -114,11 +289,11 @@ function Paid_test_details({ email }) {
                         <br />
                       </Typography>
                       <Typography variant="body2" component="p">
-                        recieved amount : {d.data().amount}
+                        Total Amount : {d.data().amount}
                         <br />
-                        {d.data().pending_amount
-                          ? `pending amount : ${d.data().pending_amount}`
-                          : ""}
+                        Recieved Amount : {d.data().amount}
+                        <br />
+                        pending amount : 0
                       </Typography>
                     </CardContent>
                     <CardActions></CardActions>
@@ -136,6 +311,7 @@ function Paid_test_details({ email }) {
                   style={{
                     display: "inline-block",
                     width: " 400px",
+
                     margin: "10px",
                   }}
                 >
@@ -148,12 +324,18 @@ function Paid_test_details({ email }) {
                       >
                         <div style={{ float: "left" }}>
                           BillNo : {d.data().BillNo}
+                          <br />
+                          Date : {d.data().Date}
                         </div>
                         <div style={{ float: "right" }}>Offline Bill</div>
                         <div style={{ clear: "both" }}></div>
                       </Typography>
 
-                      <Typography className={classes.pos} color="textSecondary">
+                      <Typography
+                        className={classes.pos}
+                        color="textSecondary"
+                        style={{ height: "100px" }}
+                      >
                         {d.data().servicename
                           ? `Service Name:` + d.data().servicename
                           : ""}
@@ -169,14 +351,36 @@ function Paid_test_details({ email }) {
                       </Typography>
 
                       <Typography variant="body2" component="p">
-                        recieved amount : {d.data().payAmount}
+                        Total Amount : {d.data().TotalAmoutn}
                         <br />
-                        {d.data().pandingAmount > 0
-                          ? `pending amount : ${d.data().pandingAmount}`
-                          : ""}
+                        Recieved Amount : {d.data().payAmount}
+                        <br />
+                        Pending Amount : {d.data().pandingAmount}
                       </Typography>
                     </CardContent>
-                    <CardActions></CardActions>
+                    <CardActions>
+                      <Button
+                        style={{ width: "100px" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          EditBill(d.id);
+                        }}
+                        color="success"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        style={{ width: "100px" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          DeleteBill(d.id);
+                        }}
+                        color="success"
+                      >
+                        Delete
+                      </Button>
+                    </CardActions>
                   </Card>
                 </div>
               );

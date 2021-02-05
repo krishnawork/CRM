@@ -181,6 +181,7 @@ export default function Billing() {
   };
   useEffect(() => {
     db.collection("All_order")
+      .orderBy("TimeNow", "desc")
       .get()
       .then((result) => {
         if (!result.empty) {
@@ -219,6 +220,7 @@ export default function Billing() {
             number: mnumber,
             email: `${patient_email ? patient_email : "fname"}`,
             offline: "offline",
+            TimeNow: firebase.firestore.FieldValue.serverTimestamp(),
           },
           { merge: true }
         )
@@ -229,6 +231,7 @@ export default function Billing() {
               .collection("Offline")
               .add({
                 BillNo: result,
+                Date: new Date().toISOString().slice(0, 10),
                 userID: patient_email,
                 servicename: servicename,
                 serviceproductname: serviceproductname,
@@ -256,6 +259,7 @@ export default function Billing() {
                   .collection("offline_order")
                   .add({
                     BillNo: result,
+                    Date: new Date().toISOString().slice(0, 10),
                     userID: patient_email,
                     servicename: servicename,
                     serviceproductname: serviceproductname,
@@ -425,7 +429,12 @@ export default function Billing() {
                       </List>
                     </Typography>
                     <Typography className={classes.secondaryHeading}>
-                      {d.email}
+                      {/* {d.email} */}
+                      <List>
+                        <ListItem style={{ marginTop: "5px" }}>
+                          <ListItemText primary={d.email} />
+                        </ListItem>
+                      </List>
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails>

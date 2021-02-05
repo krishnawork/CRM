@@ -34,7 +34,9 @@ import Icons from "../../pages/icons";
 import Tables from "../../pages/tables";
 import Charts from "../../pages/charts";
 import ChatBoard from "../../pages/ChatBoard/ChatBoard";
+
 import ReportGenerator from "../../reportGenerator";
+import Progress from "../../pages/Progress/Progress";
 
 class Layout extends React.Component {
   static propTypes = {
@@ -114,6 +116,7 @@ class Layout extends React.Component {
           <Hammer onSwipe={this.handleSwipe}>
             <main className={s.content}>
               <BreadcrumbHistory url={this.props.location.pathname} />
+              <div style={{ marginTop: "20px" }}></div>
               <TransitionGroup>
                 <CSSTransition
                   key={this.props.location.key}
@@ -158,6 +161,11 @@ class Layout extends React.Component {
                       path="/app/main/chatBoard"
                       exact
                       component={ChatBoard}
+                    />
+                    <Route
+                      path={"/app/main/progress"}
+                      exact
+                      component={Progress}
                     />
                     <Route path={"/app/typography"} component={Typography} />
                     <Route path={"/app/tables"} component={Tables} />

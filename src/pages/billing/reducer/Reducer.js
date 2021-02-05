@@ -90,6 +90,28 @@ const MNumber = (mnumber = "", action) => {
   }
 };
 
+const Updatebillemail = (updatebillemail = "", action) => {
+  if (action.type === "ADD_UPDATE_EMAIL") {
+    return action.payload.email;
+  } else {
+    return updatebillemail;
+  }
+};
+const Updatebillid = (updatebillid = "", action) => {
+  if (action.type === "ADD_UPDATE_ID") {
+    return action.payload.id;
+  } else {
+    return updatebillid;
+  }
+};
+const Editbill = (editbill = false, action) => {
+  if (action.type === "EDIT_BILL") {
+    return action.payload.id;
+  } else {
+    return editbill;
+  }
+};
+
 export default combineReducers({
   servceamount: ServiceAmount,
   programamount: ProgramAmount,
@@ -103,4 +125,7 @@ export default combineReducers({
   fname: FName,
   lname: LName,
   mnumber: MNumber,
+  updatebillemail: Updatebillemail,
+  updatebillid: Updatebillid,
+  editbill: Editbill,
 });
