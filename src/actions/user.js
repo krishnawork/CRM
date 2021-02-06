@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import config from "../config.js";
@@ -23,7 +23,15 @@ export const FETCH_USER_FAILURE = "FETCH_USER_FAILURE";
 export const FETCH_OFFLINE_USERS_SUCCESS = "FETCH_OFFLINE_USERS_SUCCESS";
 export const FETCH_DOCTORS_USERS_SUCCESS = "FETCH_DOCTORS_USERS_SUCCESS";
 export const EDIT_FALSE = "EDIT_FALSE";
-
+export const USER_TYPE = "USER_TYPE";
+export function setusertype(type) {
+  return {
+    type: USER_TYPE,
+    payload: {
+      type: type,
+    },
+  };
+}
 export function receiveLogin() {
   return {
     type: LOGIN_SUCCESS,
@@ -140,6 +148,7 @@ export function logoutUser() {
   return (dispatch) => {
     dispatch(requestLogout());
     localStorage.removeItem("authenticated");
+    localStorage.removeItem("user_Type_set");
     dispatch(receiveLogout());
   };
 }
@@ -149,27 +158,61 @@ export function loginUser(creds) {
     // dispatch(receiveLogin());
 
     if (creds.email.length > 0 && creds.password.length > 0) {
-      axios
-        .post(config.baseURLApi + "login", {
-          email: creds.email,
-          password: creds.password,
-        })
-        .then(function (response) {
-          if (response.data.message === "No user found") {
+      db.collection("CRM")
+        .doc(creds.email)
+        .get()
+        .then((result) => {
+          if (result.exists) {
+            if (
+              result.data().email === creds.email &&
+              result.data().password === creds.password
+            ) {
+              console.log("login resposne-------", result.data().user_email);
+              dispatch(receiveLogin());
+              localStorage.setItem("authenticated", true);
+              localStorage.setItem("current_user", result.data());
+              dispatch(setusertype(result.data().user_type));
+              localStorage.setItem("user_Type_set", result.data().user_type);
+              creds.history.push("/login");
+            } else {
+              Swal.fire({
+                icon: "success",
+                text: "Password Wrong",
+                showConfirmButton: true,
+                timer: 3500,
+              });
+            }
+          } else {
             Swal.fire({
               icon: "success",
               text: "No user found",
               showConfirmButton: true,
               timer: 3500,
             });
-          } else {
-            console.log("login resposne-------", response.data.user);
-            dispatch(receiveLogin());
-            localStorage.setItem("authenticated", true);
-            localStorage.setItem("current_user", response.data.user);
-            creds.history.push("/login");
           }
         })
+
+        // axios
+        //   .post(config.baseURLApi + "login", {
+        //     email: creds.email,
+        //     password: creds.password,
+        //   })
+        // .then(function (response) {
+        //   if (response.data.message === "No user found") {
+        //     Swal.fire({
+        //       icon: "success",
+        //       text: "No user found",
+        //       showConfirmButton: true,
+        //       timer: 3500,
+        //     });
+        //   } else {
+        //     console.log("login resposne-------", response.data.user);
+        //     dispatch(receiveLogin());
+        //     localStorage.setItem("authenticated", true);
+        //     localStorage.setItem("current_user", response.data.user);
+        //     creds.history.push("/login");
+        //   }
+        // })
         .catch(function (error) {
           // handle error
           console.log(error);
@@ -199,13 +242,27 @@ export function createUser(userData) {
           schedule: userData.schedule,
         })
         .then(function (response) {
-          Swal.fire({
-            icon: "success",
-            type: "success",
-            text: "Registered successfully!",
-            showConfirmButton: true,
-            timer: 3500,
-          });
+          db.collection("CRM")
+            .doc(userData.email)
+            .set({
+              fname: userData.fname,
+              lname: userData.lname,
+              number: userData.number,
+              email: userData.email,
+              password: userData.password,
+              user_type: userData.user_type,
+              type: userData.type,
+            })
+            .then((result) => {
+              Swal.fire({
+                icon: "success",
+                type: "success",
+                text: "Registered successfully!",
+                showConfirmButton: true,
+                timer: 3500,
+              });
+            });
+
           console.log("-----------000000", response);
           dispatch(createUserSuccess(response.data.user));
           // window.location.assign('/');
@@ -233,16 +290,36 @@ export function updateUser(userData) {
         schedule: userData.schedule,
       })
       .then(function (response) {
-        Swal.fire({
-          icon: "success",
-          type: "success",
-          text: "Update successfully!",
-          showConfirmButton: true,
-          timer: 2000,
-        });
+        alert(userData.email);
+        db.collection("CRM")
+          .doc(userData.email)
+          .update({
+            email: userData.email,
+            fname: userData.fname,
+            lname: userData.lname,
+            number: userData.number,
+          })
+          .then((result) => {
+            Swal.fire({
+              icon: "success",
+              type: "success",
+              text: "Update successfully!",
+              showConfirmButton: true,
+              timer: 2000,
+            });
+          });
+        //
+        // Swal.fire({
+        //   icon: "success",
+        //   type: "success",
+        //   text: "Update successfully!",
+        //   showConfirmButton: true,
+        //   timer: 2000,
+        // });
         console.log("updat done");
         console.log(response.data.user);
         dispatch(updateUserSuccess(response.data.user));
+
         // window.location.assign('/');
       })
       .catch(function (error) {

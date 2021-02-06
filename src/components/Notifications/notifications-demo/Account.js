@@ -8,8 +8,8 @@ import s from "./ListGroup.module.scss";
 import settingsIcon from "../../../images/settings.svg";
 import logoutIcon from "../../../images/logout.svg";
 import accountIcon from "../../../images/account.svg";
-import {withRouter} from "react-router";
-import {connect} from "react-redux";
+import { withRouter } from "react-router";
+import { connect } from "react-redux";
 
 class MessagesDemo extends React.Component {
   constructor(props) {
@@ -18,6 +18,7 @@ class MessagesDemo extends React.Component {
   }
   doLogout() {
     this.props.dispatch(logoutUser());
+    window.location.reload();
   }
   render() {
     return (
@@ -30,7 +31,10 @@ class MessagesDemo extends React.Component {
         <ListGroupItem className={`${s.listGroupItemAccount} mt-2`}>
           <img src={accountIcon} alt="settings" className={"mr-2"} /> Account
         </ListGroupItem>
-        <ListGroupItem className={`${s.listGroupItemAccount} mt-2 mb-3`} onClick={() => this.doLogout()}>
+        <ListGroupItem
+          className={`${s.listGroupItemAccount} mt-2 mb-3`}
+          onClick={() => this.doLogout()}
+        >
           <img src={logoutIcon} alt="settings" className={"mr-2"} /> Log out
         </ListGroupItem>
       </ListGroup>
@@ -39,10 +43,10 @@ class MessagesDemo extends React.Component {
 }
 
 function mapStateToProps(store) {
-    return {
-        sidebarOpened: store.navigation.sidebarOpened,
-        sidebarStatic: store.navigation.sidebarStatic,
-    };
+  return {
+    sidebarOpened: store.navigation.sidebarOpened,
+    sidebarStatic: store.navigation.sidebarStatic,
+  };
 }
 
 export default withRouter(connect(mapStateToProps)(MessagesDemo));

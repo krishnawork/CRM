@@ -1925,17 +1925,32 @@ class Doctor extends React.Component {
           </ModalHeader>
           <ModalBody>
             <Row>
-              <Col xl={6}>
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    className="form-control"
-                    id="email"
-                    value={this.state.email}
-                    onChange={(event) => this.onEmailChange(event)}
-                  />
-                </div>
-              </Col>
+              {this.state.is_create == true ? (
+                <Col xl={6}>
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      className="form-control"
+                      id="email"
+                      value={this.state.email}
+                      onChange={(event) => this.onEmailChange(event)}
+                    />
+                  </div>
+                </Col>
+              ) : (
+                <Col xl={6}>
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      className="form-control"
+                      id="email"
+                      value={this.state.email}
+                      disabled
+                    />
+                  </div>
+                </Col>
+              )}
+
               <Col xl={6}>
                 <div className="form-group">
                   <label htmlFor="fname">FirstName</label>

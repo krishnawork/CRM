@@ -1,14 +1,15 @@
-import { combineReducers } from 'redux';
-import auth from './auth';
-import navigation from './navigation';
-import alerts from './alerts';
-import register from './register';
-import blog from './blog';
-import test from './test';
-import appoinment from './appoinment';
-import program from './program';
-import billing from './billing';
-import referral from './referral';
+import { combineReducers } from "redux";
+import auth from "./auth";
+import navigation from "./navigation";
+import alerts from "./alerts";
+import register from "./register";
+import blog from "./blog";
+import test from "./test";
+import appoinment from "./appoinment";
+import program from "./program";
+import billing from "./billing";
+import referral from "./referral";
+import User_type from "./User_type";
 
 export default combineReducers({
   alerts,
@@ -20,5 +21,6 @@ export default combineReducers({
   appoinment,
   program,
   billing,
-  referral
+  referral,
+  User_type,
 });
