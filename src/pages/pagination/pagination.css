@@ -1,0 +1,12 @@
+.pagination_line {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.colorchange {
+  background-color: #feb049 !important;
+}
+.page-item {
+  border: 1px solid #d6dee5;
+}

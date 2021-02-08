@@ -19,6 +19,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import InputBase from "@material-ui/core/InputBase";
 import firebase from "../../firebase";
 import Progress_details from "./Progress_details";
+import Pagination from "../pagination/Pagination";
 
 let db = firebase.firestore();
 //
@@ -90,6 +91,17 @@ function Progress() {
   const [open, setOpen] = useState(false);
   const [user, setuser] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  //
+  const [totallength, settotallength] = useState(0);
+  const [showPerPage, setShowPerPage] = useState(5);
+  const [pagination, setPagination] = useState({
+    start: 0,
+    end: showPerPage,
+  });
+  const onPaginationChange = (start, end) => {
+    setPagination({ start: start, end: end });
+  };
+  //
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -106,6 +118,7 @@ function Progress() {
       .get()
       .then((result) => {
         if (!result.empty) {
+          settotallength(result.size);
           result.forEach((data) => {
             setuser((old) => [...old, data.data()]);
           });
@@ -115,7 +128,7 @@ function Progress() {
   return (
     <div>
       {user.length > 0
-        ? user.map((d, index) => {
+        ? user.slice(pagination.start, pagination.end).map((d, index) => {
             return (
               <Accordion
                 key={index}
@@ -160,6 +173,15 @@ function Progress() {
             );
           })
         : ""}
+      {totallength > 0 ? (
+        <Pagination
+          showPerPage={showPerPage}
+          onPaginationChange={onPaginationChange}
+          total={totallength}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 }

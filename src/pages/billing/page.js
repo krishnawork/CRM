@@ -28,9 +28,9 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import firebase from "../../firebase";
-import Order_details from "./Order_details";
-import Patient from "../patient/Patient";
-import Billing_details from "./Billing_details";
+import Orderdetails from "./Order_details";
+import Patient from "../patient/Patient2";
+import Billingdetails from "./Billing_details";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -42,6 +42,8 @@ import { getid, incress } from "./Get_id";
 import Swal from "sweetalert2";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Pagination from "../pagination/Pagination";
+
 let db = firebase.firestore();
 
 //
@@ -157,6 +159,7 @@ export default function Billing() {
   const [web_user, setweb_user] = useState([]);
   const [patient_email, setpatient_email] = useState(null);
   const [payment, setpayment] = useState(null);
+  const [searchpatient, setsearchpatient] = useState("");
   const servceamount = useSelector((state) => state.servceamount);
   const programamount = useSelector((state) => state.programamount);
   const paidamamount = useSelector((state) => state.paidamamount);
@@ -165,9 +168,21 @@ export default function Billing() {
   const servicesession = useSelector((state) => state.servicesession);
   const programname = useSelector((state) => state.programname);
   const paidtestname = useSelector((state) => state.paidtestname);
+  const [searchDataValue, setsearchDataValue] = useState([]);
+  const [Loading, setLoading] = useState("");
   const fname = useSelector((state) => state.fname);
   const lname = useSelector((state) => state.lname);
+
   const mnumber = useSelector((state) => state.mnumber);
+  const [totallength, settotallength] = useState(0);
+  const [showPerPage, setShowPerPage] = useState(5);
+  const [pagination, setPagination] = useState({
+    start: 0,
+    end: showPerPage,
+  });
+  const onPaginationChange = (start, end) => {
+    setPagination({ start: start, end: end });
+  };
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -185,6 +200,7 @@ export default function Billing() {
       .get()
       .then((result) => {
         if (!result.empty) {
+          settotallength(result.size);
           result.forEach((data) => {
             setorderdata((old) => [...old, data.data()]);
           });
@@ -296,8 +312,22 @@ export default function Billing() {
     }
   };
   //
+  useEffect(() => {
+    if (searchpatient) {
+      setsearchDataValue([]);
+      orderdata.map((d) => {
+        if (d.email.match(searchpatient)) {
+          setsearchDataValue((old) => [
+            ...old,
+            { email: d.email, fname: d.fname, lname: d.lname },
+          ]);
+        }
+      });
+    }
+  }, [searchpatient]);
+  //
   return (
-    <div>
+    <>
       <Backdrop className={classes.backdrop} open={openb}>
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -307,6 +337,20 @@ export default function Billing() {
             Create
           </Button>{" "}
         </Col>
+        <Col xl={6} style={{ paddingBottom: "10px" }}>
+          <input
+            type="text"
+            list="patient"
+            placeholder="Search"
+            style={{
+              height: "40px",
+              width: "100%",
+              border: "1px solid gray",
+              padding: "10px",
+            }}
+            onChange={(event) => setsearchpatient(event.target.value)}
+          />
+        </Col>
       </Row>
       {/*  */}
 
@@ -314,15 +358,6 @@ export default function Billing() {
         <ModalHeader>Creat New Bill</ModalHeader>
         <ModalBody>
           <Row>
-            {/* <Col xl={6}>
-              <input type="text" list="cars" />
-              <datalist id="cars">
-                <option>Volvo</option>
-                <option>Saab</option>
-                <option>Mercedes</option>
-                <option>Audi</option>
-              </datalist>
-            </Col> */}
             <Col xl={6}>
               <div className="form-group">
                 <label htmlFor="email">Please Select Email Address</label>
@@ -349,7 +384,7 @@ export default function Billing() {
                 </datalist>
               </div>
             </Col>
-            <Billing_details id={patient_email} />
+            <Billingdetails id={patient_email} />
           </Row>
         </ModalBody>
         <ModalFooter>
@@ -365,7 +400,6 @@ export default function Billing() {
                     Number(paidamamount)
                   }
                   disabled
-                  // onChange={(event) => this.onEmailChange(event)}
                 />
               </div>
             </Col>
@@ -397,54 +431,112 @@ export default function Billing() {
 
       {/* <SimpleDialog open={open} onClose={handleClose} /> */}
       {/*  */}
-      <div className={classes.root}>
-        {orderdata.length > 0
-          ? orderdata.map((d, index) => {
-              return (
-                <Accordion
-                  key={index}
-                  expanded={expanded === `panel${index}`}
-                  onChange={handleChange(`panel${index}`)}
-                >
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1bh-content"
-                    id="panel1bh-header"
+      {searchpatient === "" ? (
+        <>
+          <div className={classes.root}>
+            {orderdata
+              .slice(pagination.start, pagination.end)
+              .map((d, index) => {
+                return (
+                  <Accordion
+                    key={index}
+                    expanded={expanded === `panel${index}`}
+                    onChange={handleChange(`panel${index}`)}
                   >
-                    <Typography className={classes.heading}>
-                      <List>
-                        <ListItem>
-                          <ListItemAvatar>
-                            <Avatar
-                              alt={d.email}
-                              src="/static/images/avatar/1.jpg"
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1bh-content"
+                      id="panel1bh-header"
+                    >
+                      <Typography className={classes.heading}>
+                        <List>
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar
+                                alt={d.email}
+                                src="/static/images/avatar/1.jpg"
+                              />
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={`${d.fname ? d.fname : ""} ${
+                                d.lname ? d.lname : ""
+                              }`}
                             />
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={`${d.fname ? d.fname : ""} ${
-                              d.lname ? d.lname : ""
-                            }`}
-                          />
-                        </ListItem>
-                      </List>
-                    </Typography>
-                    <Typography className={classes.secondaryHeading}>
-                      {/* {d.email} */}
-                      <List>
-                        <ListItem style={{ marginTop: "5px" }}>
-                          <ListItemText primary={d.email} />
-                        </ListItem>
-                      </List>
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Order_details email={d.email} />
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })
-          : "Loading"}
-      </div>
-    </div>
+                          </ListItem>
+                        </List>
+                      </Typography>
+                      <Typography className={classes.secondaryHeading}>
+                        {/* {d.email} */}
+                        <List>
+                          <ListItem style={{ marginTop: "5px" }}>
+                            <ListItemText primary={d.email} />
+                          </ListItem>
+                        </List>
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Orderdetails email={d.email} />
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              })}
+          </div>
+          {totallength > 0 ? (
+            <Pagination
+              showPerPage={showPerPage}
+              onPaginationChange={onPaginationChange}
+              total={totallength}
+            />
+          ) : (
+            ""
+          )}
+        </>
+      ) : (
+        searchDataValue.map((d, index) => {
+          return (
+            <Accordion
+              key={index}
+              expanded={expanded === `panel${index}`}
+              onChange={handleChange(`panel${index}`)}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+              >
+                <Typography className={classes.heading}>
+                  <List>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar
+                          alt={d.email}
+                          src="/static/images/avatar/1.jpg"
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`${d.fname ? d.fname : ""} ${
+                          d.lname ? d.lname : ""
+                        }`}
+                      />
+                    </ListItem>
+                  </List>
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                  {/* {d.email} */}
+                  <List>
+                    <ListItem style={{ marginTop: "5px" }}>
+                      <ListItemText primary={d.email} />
+                    </ListItem>
+                  </List>
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Orderdetails email={d.email} />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })
+      )}
+    </>
   );
 }

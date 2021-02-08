@@ -494,10 +494,10 @@ class Sidebar extends React.Component {
           </ul>
 
           <ul>
-            <LinksGroup
-              onActiveSidebarItemChange={(activeItem) =>
-                this.props.dispatch(changeActiveSidebarItem(activeItem))
-              }
+            {/* <LinksGroup
+              // onActiveSidebarItemChange={(activeItem) =>
+              //   this.props.dispatch(changeActiveSidebarItem(activeItem))
+              // }
               header="Logout"
               isHeader
               onClick={() => this.doLogout()}
@@ -517,6 +517,23 @@ class Sidebar extends React.Component {
                   height={"24px"}
                 />
               )}
+            </LinksGroup> */}
+            <LinksGroup
+              onActiveSidebarItemChange={(activeItem) =>
+                this.props.dispatch(changeActiveSidebarItem(activeItem))
+              }
+              activeItem={this.props.activeItem}
+              header="Logout"
+              isHeader
+              index="main"
+              onClick={() => this.doLogout()}
+            >
+              <img
+                src={logoutIcon}
+                alt="lightDashboard"
+                width={"24px"}
+                height={"24px"}
+              />
             </LinksGroup>
           </ul>
         </nav>
