@@ -39,6 +39,8 @@ class Staff extends React.Component {
       number: "",
       password: "",
       confirm_password: "",
+      searchpatient: "",
+      searchDataValue: [],
     };
   }
 
@@ -172,6 +174,32 @@ class Staff extends React.Component {
       this.props.dispatch(deleteUser({ id: id }));
     }
   };
+  // krushnkant
+  update = () => {
+    this.props.users.map((row) => {
+      if (row.email.match(this.state.searchpatient)) {
+        this.setState((prevState) => ({
+          searchDataValue: [
+            ...prevState.searchDataValue,
+            {
+              email: row.email,
+              id: row.id,
+              first_name: row.first_name,
+              last_name: row.last_name,
+              number: row.number,
+            },
+          ],
+        }));
+      }
+    });
+  };
+
+  search = (event) => {
+    this.setState({ searchpatient: event.target.value });
+    this.setState({ searchDataValue: [] });
+    this.update();
+  };
+  //
 
   render() {
     const { users, user } = this.props;
@@ -185,6 +213,28 @@ class Staff extends React.Component {
             <Button color="primary" onClick={this.toggle}>
               Create
             </Button>{" "}
+          </Col>
+          <Col xl={2} style={{ paddingBottom: "10px" }}>
+            <p></p>
+          </Col>
+          <Col xl={6} style={{ paddingBottom: "10px" }}>
+            <input
+              type="text"
+              list="patient"
+              placeholder="Search"
+              className="changeborder"
+              style={{
+                height: "40px",
+                width: "100%",
+                border: "1px solid gray",
+                padding: "10px",
+                borderRadius: "20px",
+              }}
+              onChange={(event) => {
+                // this.setState({ searchpatient: event.target.value });
+                this.search(event);
+              }}
+            />
           </Col>
         </Row>
         <Row>
@@ -203,39 +253,98 @@ class Staff extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {users
-                      .slice(
-                        this.props.pagination.start,
-                        this.props.pagination.end
-                      )
-                      .map((row) => (
-                        <tr key={row.id}>
-                          <td>{row.id}</td>
-                          <td>
-                            {row.first_name} {row.last_name}
-                          </td>
-                          <td>{row.email}</td>
-                          <td>{row.number}</td>
-                          <td>
-                            <a onClick={(event) => this.onEdit(event, row.id)}>
-                              <img
-                                src={require("../../images/edit.png")}
-                                width="20"
-                                height="25"
-                              />
-                            </a>
-                            <a
-                              onClick={(event) => this.onDelete(event, row.id)}
-                            >
-                              <img
-                                src={require("../../images/delete.png")}
-                                width="40"
-                                height="25"
-                              />
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
+                    {this.state.searchpatient === "" ? (
+                      <>
+                        {this.props.setshow(true)}
+                        {users
+                          .slice(
+                            this.props.pagination.start,
+                            this.props.pagination.end
+                          )
+                          .map((row) => (
+                            <tr key={row.id}>
+                              <td>{row.id}</td>
+                              <td>
+                                {row.first_name} {row.last_name}
+                              </td>
+                              <td>{row.email}</td>
+                              <td>{row.number}</td>
+                              <td>
+                                <a
+                                  href="!#"
+                                  onClick={(event) =>
+                                    this.onEdit(event, row.id)
+                                  }
+                                >
+                                  <img
+                                    alt="edit"
+                                    src={require("../../images/edit.png")}
+                                    width="20"
+                                    height="25"
+                                  />
+                                </a>
+                                <a
+                                  href="!#"
+                                  onClick={(event) =>
+                                    this.onDelete(event, row.id)
+                                  }
+                                >
+                                  <img
+                                    alt="delete"
+                                    src={require("../../images/delete.png")}
+                                    width="40"
+                                    height="25"
+                                  />
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                      </>
+                    ) : (
+                      <>
+                        {this.props.setshow(false)}
+                        {this.state.searchDataValue != null
+                          ? this.state.searchDataValue.map((row) => (
+                              <tr key={row.id}>
+                                <td>{row.id}</td>
+                                <td>
+                                  {row.first_name} {row.last_name}
+                                </td>
+                                <td>{row.email}</td>
+                                <td>{row.number}</td>
+                                <td>
+                                  <a
+                                    href="!#"
+                                    onClick={(event) =>
+                                      this.onEdit(event, row.id)
+                                    }
+                                  >
+                                    <img
+                                      alt="edit"
+                                      src={require("../../images/edit.png")}
+                                      width="20"
+                                      height="25"
+                                    />
+                                  </a>
+                                  <a
+                                    href="!#"
+                                    onClick={(event) =>
+                                      this.onDelete(event, row.id)
+                                    }
+                                  >
+                                    <img
+                                      alt="delete"
+                                      src={require("../../images/delete.png")}
+                                      width="40"
+                                      height="25"
+                                    />
+                                  </a>
+                                </td>
+                              </tr>
+                            ))
+                          : "NO DATA FOUND"}
+                      </>
+                    )}
                   </tbody>
                 </Table>
               </Widget>

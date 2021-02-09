@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-
+import {
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Table,
+  Button,
+} from "reactstrap";
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -91,6 +100,8 @@ function Progress() {
   const [open, setOpen] = useState(false);
   const [user, setuser] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  const [searchpatient, setsearchpatient] = useState("");
+  const [searchDataValue, setsearchDataValue] = useState([]);
   //
   const [totallength, settotallength] = useState(0);
   const [showPerPage, setShowPerPage] = useState(5);
@@ -125,62 +136,152 @@ function Progress() {
         }
       });
   }, []);
+  //
+  useEffect(() => {
+    if (searchpatient) {
+      setsearchDataValue([]);
+      user.map((d) => {
+        if (d.email.match(searchpatient)) {
+          setsearchDataValue((old) => [
+            ...old,
+            { email: d.email, fname: d.fname, lname: d.lname },
+          ]);
+        }
+      });
+    }
+  }, [searchpatient]);
+  //
   return (
     <div>
-      {user.length > 0
-        ? user.slice(pagination.start, pagination.end).map((d, index) => {
-            return (
-              <Accordion
-                key={index}
-                expanded={expanded === `panel${index}`}
-                onChange={handleChange(`panel${index}`)}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1bh-content"
-                  id="panel1bh-header"
-                >
-                  <Typography className={classes.heading}>
-                    <List>
-                      <ListItem>
-                        <ListItemAvatar>
-                          <Avatar
-                            alt={d.email}
-                            src="/static/images/avatar/1.jpg"
-                          />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={`${d.fname ? d.fname : ""} ${
-                            d.lname ? d.lname : ""
-                          }`}
-                        />
-                      </ListItem>
-                    </List>
-                  </Typography>
-                  <Typography className={classes.secondaryHeading}>
-                    {/* {d.email} */}
-                    <List>
-                      <ListItem style={{ marginTop: "5px" }}>
-                        <ListItemText primary={d.email} />
-                      </ListItem>
-                    </List>
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Progress_details email={d.email} />
-                </AccordionDetails>
-              </Accordion>
-            );
-          })
-        : ""}
-      {totallength > 0 ? (
-        <Pagination
-          showPerPage={showPerPage}
-          onPaginationChange={onPaginationChange}
-          total={totallength}
-        />
+      <Row>
+        <Col xl={4} style={{ paddingBottom: "10px" }}>
+          <p></p>
+        </Col>
+        <Col xl={2} style={{ paddingBottom: "10px" }}>
+          <p></p>
+        </Col>
+        <Col xl={6} style={{ paddingBottom: "10px" }}>
+          <input
+            type="text"
+            list="patient"
+            placeholder="Search"
+            className="changeborder"
+            style={{
+              height: "40px",
+              width: "100%",
+              border: "1px solid gray",
+              padding: "10px",
+              borderRadius: "20px",
+            }}
+            onChange={(event) => setsearchpatient(event.target.value)}
+          />
+        </Col>
+      </Row>
+      {searchpatient === "" ? (
+        <>
+          <div>
+            {user.length > 0
+              ? user.slice(pagination.start, pagination.end).map((d, index) => {
+                  return (
+                    <Accordion
+                      key={index}
+                      expanded={expanded === `panel${index}`}
+                      onChange={handleChange(`panel${index}`)}
+                    >
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1bh-content"
+                        id="panel1bh-header"
+                      >
+                        <Typography className={classes.heading}>
+                          <List>
+                            <ListItem>
+                              <ListItemAvatar>
+                                <Avatar
+                                  alt={d.email}
+                                  src="/static/images/avatar/1.jpg"
+                                />
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={`${d.fname ? d.fname : ""} ${
+                                  d.lname ? d.lname : ""
+                                }`}
+                              />
+                            </ListItem>
+                          </List>
+                        </Typography>
+                        <Typography className={classes.secondaryHeading}>
+                          {/* {d.email} */}
+                          <List>
+                            <ListItem style={{ marginTop: "5px" }}>
+                              <ListItemText primary={d.email} />
+                            </ListItem>
+                          </List>
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Progress_details email={d.email} />
+                      </AccordionDetails>
+                    </Accordion>
+                  );
+                })
+              : ""}
+          </div>
+          {totallength > 0 ? (
+            <Pagination
+              showPerPage={showPerPage}
+              onPaginationChange={onPaginationChange}
+              total={totallength}
+            />
+          ) : (
+            ""
+          )}
+        </>
       ) : (
-        ""
+        searchDataValue.map((d, index) => {
+          return (
+            <Accordion
+              key={index}
+              expanded={expanded === `panel${index}`}
+              onChange={handleChange(`panel${index}`)}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+              >
+                <Typography className={classes.heading}>
+                  <List>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar
+                          alt={d.email}
+                          src="/static/images/avatar/1.jpg"
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`${d.fname ? d.fname : ""} ${
+                          d.lname ? d.lname : ""
+                        }`}
+                      />
+                    </ListItem>
+                  </List>
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                  {/* {d.email} */}
+                  <List>
+                    <ListItem style={{ marginTop: "5px" }}>
+                      <ListItemText primary={d.email} />
+                    </ListItem>
+                  </List>
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Progress_details email={d.email} />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })
       )}
     </div>
   );

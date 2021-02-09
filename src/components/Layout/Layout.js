@@ -5,7 +5,7 @@ import { Switch, Route, withRouter, Redirect } from "react-router";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import Hammer from "rc-hammerjs";
 
-import Dashboard from "../../pages/dashboard";
+import Dashboard from "../../pages/dashboard/Dashboard";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
 import {

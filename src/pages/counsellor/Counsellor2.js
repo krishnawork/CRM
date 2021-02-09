@@ -25,6 +25,8 @@ class Counsellor extends React.Component {
       modal: false,
       selectedFile: null,
       link: "",
+      searchpatient: "",
+      searchDataValue: [],
     };
   }
 
@@ -117,10 +119,64 @@ class Counsellor extends React.Component {
         });
     }
   };
+  update = () => {
+    this.state.counsellors.map((counsellor) => {
+      if (counsellor.email.match(this.state.searchpatient)) {
+        this.setState((prevState) => ({
+          searchDataValue: [
+            ...prevState.searchDataValue,
+            {
+              email: counsellor.email,
+              id: counsellor.id,
+              first_name: counsellor.first_name,
+              last_name: counsellor.last_name,
+              number: counsellor.number,
+            },
+          ],
+        }));
+        // this.setState({
+        //   searchDataValue: this.state.searchDataValue.concat(counsellor.email),
+        // });
+      }
+    });
+  };
+
+  search = (event) => {
+    this.setState({ searchpatient: event.target.value });
+    this.setState({ searchDataValue: [] });
+    this.update();
+  };
 
   render() {
     return (
       <div className={s.root}>
+        <Row>
+          <Col xl={4} style={{ paddingBottom: "10px" }}>
+            <p></p>
+          </Col>
+          <Col xl={2} style={{ paddingBottom: "10px" }}>
+            <p></p>
+          </Col>
+          <Col xl={6} style={{ paddingBottom: "10px" }}>
+            <input
+              type="text"
+              list="patient"
+              placeholder="Search"
+              className="changeborder"
+              style={{
+                height: "40px",
+                width: "100%",
+                border: "1px solid gray",
+                padding: "10px",
+                borderRadius: "20px",
+              }}
+              onChange={(event) => {
+                // this.setState({ searchpatient: event.target.value });
+                this.search(event);
+              }}
+            />
+          </Col>
+        </Row>
         <Row>
           <Col lg={12}>
             <div className="table-responsive">
@@ -140,44 +196,91 @@ class Counsellor extends React.Component {
                   {this.state.counsellors != null
                     ? this.props.settotallength(this.state.counsellors.length)
                     : ""}
-                  {this.state.counsellors != null
-                    ? this.state.counsellors.map((counsellor) => (
-                        <tr>
-                          <td>{counsellor.id}</td>
-                          <td>{counsellor.first_name}</td>
-                          <td>{counsellor.last_name}</td>
-                          <td>{counsellor.email}</td>
-                          <td>{counsellor.number}</td>
-                          <td>
-                            {counsellor.pdf_blob !== null &&
-                            counsellor.pdf_blob != "" ? (
-                              <a
-                                href={this.state.link + counsellor.pdf_blob}
-                                target="_blank"
-                              >
-                                <img
-                                  src={require("../../images/file-view.png")}
-                                  width="25"
-                                  height="25"
-                                />
-                              </a>
-                            ) : (
-                              <a
-                                onClick={(event) =>
-                                  this.onUpload(event, counsellor)
-                                }
-                              >
-                                <img
-                                  src={require("../../images/upload_file.png")}
-                                  width="25"
-                                  height="25"
-                                />
-                              </a>
-                            )}
-                          </td>
-                        </tr>
-                      ))
-                    : ""}
+                  {this.state.searchpatient === "" ? (
+                    <>
+                      {this.props.setshow(true)}
+                      {this.state.counsellors != null
+                        ? this.state.counsellors.map((counsellor) => (
+                            <tr>
+                              <td>{counsellor.id}</td>
+                              <td>{counsellor.first_name}</td>
+                              <td>{counsellor.last_name}</td>
+                              <td>{counsellor.email}</td>
+                              <td>{counsellor.number}</td>
+                              <td>
+                                {counsellor.pdf_blob !== null &&
+                                counsellor.pdf_blob != "" ? (
+                                  <a
+                                    href={this.state.link + counsellor.pdf_blob}
+                                    target="_blank"
+                                  >
+                                    <img
+                                      src={require("../../images/file-view.png")}
+                                      width="25"
+                                      height="25"
+                                    />
+                                  </a>
+                                ) : (
+                                  <a
+                                    onClick={(event) =>
+                                      this.onUpload(event, counsellor)
+                                    }
+                                  >
+                                    <img
+                                      src={require("../../images/upload_file.png")}
+                                      width="25"
+                                      height="25"
+                                    />
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        : ""}
+                    </>
+                  ) : (
+                    <>
+                      {this.props.setshow(false)}
+                      {this.state.searchDataValue != null
+                        ? this.state.searchDataValue.map((counsellor) => (
+                            <tr>
+                              <td>{counsellor.id}</td>
+                              <td>{counsellor.first_name}</td>
+                              <td>{counsellor.last_name}</td>
+                              <td>{counsellor.email}</td>
+                              <td>{counsellor.number}</td>
+                              <td>
+                                {counsellor.pdf_blob !== null &&
+                                counsellor.pdf_blob != "" ? (
+                                  <a
+                                    href={this.state.link + counsellor.pdf_blob}
+                                    target="_blank"
+                                  >
+                                    <img
+                                      src={require("../../images/file-view.png")}
+                                      width="25"
+                                      height="25"
+                                    />
+                                  </a>
+                                ) : (
+                                  <a
+                                    onClick={(event) =>
+                                      this.onUpload(event, counsellor)
+                                    }
+                                  >
+                                    <img
+                                      src={require("../../images/upload_file.png")}
+                                      width="25"
+                                      height="25"
+                                    />
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        : ""}
+                    </>
+                  )}
                 </tbody>
                 {/* eslint-enable */}
               </Table>

@@ -197,8 +197,7 @@ export default function Billing() {
   useEffect(() => {
     db.collection("All_order")
       .orderBy("TimeNow", "desc")
-      .get()
-      .then((result) => {
+      .onSnapshot((result) => {
         if (!result.empty) {
           settotallength(result.size);
           result.forEach((data) => {
@@ -227,6 +226,44 @@ export default function Billing() {
   let submitbill = () => {
     setOpenb(true);
     if ((patient_email && servicename) || programname || paidtestname) {
+      if (servicename) {
+        db.collection("AllDate")
+          .doc(new Date().toISOString().slice(0, 10))
+          .collection("service")
+          .add({
+            date: new Date().toISOString().slice(0, 10),
+            service_name: servicename,
+            service_type: serviceproductname,
+            seassion: servicesession,
+            amount: servceamount,
+            userID: `${patient_email ? patient_email : "fname"}`,
+          });
+      }
+      if (programname) {
+        db.collection("AllDate")
+          .doc(new Date().toISOString().slice(0, 10))
+          .collection("Programs")
+          .add({
+            date: new Date().toISOString().slice(0, 10),
+            service_name: programname,
+            amount: programamount,
+            session: 4,
+            userID: `${patient_email ? patient_email : "fname"}`,
+          });
+      }
+
+      if (paidtestname) {
+        db.collection("AllDate")
+          .doc(new Date().toISOString().slice(0, 10))
+          .collection("paid-test")
+          .add({
+            test_name: paidtestname,
+            amount: paidamamount,
+            date: new Date().toISOString().slice(0, 10),
+            userID: `${patient_email ? patient_email : "fname"}`,
+          });
+      }
+
       db.collection("All_order")
         .doc(patient_email)
         .set(
@@ -337,16 +374,21 @@ export default function Billing() {
             Create
           </Button>{" "}
         </Col>
+        <Col xl={2} style={{ paddingBottom: "10px" }}>
+          <p></p>
+        </Col>
         <Col xl={6} style={{ paddingBottom: "10px" }}>
           <input
             type="text"
             list="patient"
             placeholder="Search"
+            className="changeborder"
             style={{
               height: "40px",
               width: "100%",
               border: "1px solid gray",
               padding: "10px",
+              borderRadius: "20px",
             }}
             onChange={(event) => setsearchpatient(event.target.value)}
           />

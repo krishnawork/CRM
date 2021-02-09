@@ -86,6 +86,9 @@ class Doctor extends React.Component {
       //   start: 0,
       //   end: this.showPerPage,
       // },
+
+      searchpatient: "",
+      searchDataValue: [],
     };
   }
 
@@ -1847,6 +1850,36 @@ class Doctor extends React.Component {
     }
   };
 
+  // krushnkant
+  update = () => {
+    this.props.doctors.map((row) => {
+      if (row.email.match(this.state.searchpatient)) {
+        this.setState((prevState) => ({
+          searchDataValue: [
+            ...prevState.searchDataValue,
+            {
+              email: row.email,
+              id: row.id,
+              first_name: row.first_name,
+              last_name: row.last_name,
+              number: row.number,
+            },
+          ],
+        }));
+        // this.setState({
+        //   searchDataValue: this.state.searchDataValue.concat(counsellor.email),
+        // });
+      }
+    });
+  };
+
+  search = (event) => {
+    this.setState({ searchpatient: event.target.value });
+    this.setState({ searchDataValue: [] });
+    this.update();
+  };
+  //
+
   render() {
     const { users, user, doctor_referrals, doctors } = this.props;
     //console.log("userrrrr", users);
@@ -1859,6 +1892,28 @@ class Doctor extends React.Component {
             <Button color="primary" onClick={this.toggle}>
               Create
             </Button>{" "}
+          </Col>
+          <Col xl={2} style={{ paddingBottom: "10px" }}>
+            <p></p>
+          </Col>
+          <Col xl={6} style={{ paddingBottom: "10px" }}>
+            <input
+              type="text"
+              list="patient"
+              placeholder="Search"
+              className="changeborder"
+              style={{
+                height: "40px",
+                width: "100%",
+                border: "1px solid gray",
+                padding: "10px",
+                borderRadius: "20px",
+              }}
+              onChange={(event) => {
+                // this.setState({ searchpatient: event.target.value });
+                this.search(event);
+              }}
+            />
           </Col>
         </Row>
         <Row>
@@ -1878,61 +1933,137 @@ class Doctor extends React.Component {
                   {doctors.length > 0
                     ? this.props.settotallength(doctors.length)
                     : ""}
-                  {doctors.length > 0
-                    ? doctors
-                        .slice(
-                          this.props.pagination.start,
-                          this.props.pagination.end
-                        )
-                        .map((row) => (
-                          <tr key={row.id}>
-                            <td>{row.id}</td>
-                            <td>
-                              {row.first_name} {row.last_name}
-                            </td>
-                            <td>{row.email}</td>
-                            <td>{row.number}</td>
-                            <td>
-                              <a
-                                onClick={(event) => this.onEdit(event, row.id)}
-                              >
-                                <img
-                                  src={require("../../images/edit.png")}
-                                  width="20"
-                                  height="25"
-                                />
-                              </a>
-                              <a
-                                onClick={(event) =>
-                                  this.onDelete(event, row.id)
-                                }
-                              >
-                                <img
-                                  src={require("../../images/delete.png")}
-                                  width="40"
-                                  height="25"
-                                />
-                              </a>
-                              <a
-                                onClick={(event) =>
-                                  this.onRefer(
-                                    event,
-                                    row.id,
-                                    row.first_name + " " + row.last_name
-                                  )
-                                }
-                                title="Referral"
-                              >
-                                <img
-                                  src={require("../../images/referral.png")}
-                                  width="20"
-                                  height="25"
-                                />
-                              </a>
-                            </td>
-                          </tr>
-                        ))
-                    : "NO DATA FOUND"}
+
+                  {this.state.searchpatient === "" ? (
+                    <>
+                      {this.props.setshow(true)}
+                      {doctors.length > 0
+                        ? doctors
+                            .slice(
+                              this.props.pagination.start,
+                              this.props.pagination.end
+                            )
+                            .map((row) => (
+                              <tr key={row.id}>
+                                <td>{row.id}</td>
+                                <td>
+                                  {row.first_name} {row.last_name}
+                                </td>
+                                <td>{row.email}</td>
+                                <td>{row.number}</td>
+                                <td>
+                                  <a
+                                    href="!#"
+                                    onClick={(event) =>
+                                      this.onEdit(event, row.id)
+                                    }
+                                  >
+                                    <img
+                                      src={require("../../images/edit.png")}
+                                      alt="edit"
+                                      width="20"
+                                      height="25"
+                                    />
+                                  </a>
+                                  <a
+                                    href="!#"
+                                    onClick={(event) =>
+                                      this.onDelete(event, row.id)
+                                    }
+                                  >
+                                    <img
+                                      src={require("../../images/delete.png")}
+                                      alt="delete"
+                                      width="40"
+                                      height="25"
+                                    />
+                                  </a>
+                                  <a
+                                    href="!#"
+                                    onClick={(event) =>
+                                      this.onRefer(
+                                        event,
+                                        row.id,
+                                        row.first_name + " " + row.last_name
+                                      )
+                                    }
+                                    title="Referral"
+                                  >
+                                    <img
+                                      alt="referral"
+                                      src={require("../../images/referral.png")}
+                                      width="20"
+                                      height="25"
+                                    />
+                                  </a>
+                                </td>
+                              </tr>
+                            ))
+                        : "NO DATA FOUND"}
+                    </>
+                  ) : (
+                    <>
+                      {this.props.setshow(false)}
+                      {this.state.searchDataValue != null
+                        ? this.state.searchDataValue.map((row) => (
+                            <tr key={row.id}>
+                              <td>{row.id}</td>
+                              <td>
+                                {row.first_name} {row.last_name}
+                              </td>
+                              <td>{row.email}</td>
+                              <td>{row.number}</td>
+                              <td>
+                                <a
+                                  href="!#"
+                                  onClick={(event) =>
+                                    this.onEdit(event, row.id)
+                                  }
+                                >
+                                  <img
+                                    src={require("../../images/edit.png")}
+                                    alt="edit"
+                                    width="20"
+                                    height="25"
+                                  />
+                                </a>
+                                <a
+                                  href="!#"
+                                  onClick={(event) =>
+                                    this.onDelete(event, row.id)
+                                  }
+                                >
+                                  <img
+                                    src={require("../../images/delete.png")}
+                                    alt="delete"
+                                    width="40"
+                                    height="25"
+                                  />
+                                </a>
+                                <a
+                                  href="!#"
+                                  onClick={(event) =>
+                                    this.onRefer(
+                                      event,
+                                      row.id,
+                                      row.first_name + " " + row.last_name
+                                    )
+                                  }
+                                  title="Referral"
+                                >
+                                  <img
+                                    alt="referral"
+                                    src={require("../../images/referral.png")}
+                                    width="20"
+                                    height="25"
+                                  />
+                                </a>
+                              </td>
+                            </tr>
+                          ))
+                        : "NO DATA FOUND"}
+                    </>
+                  )}
                 </tbody>
               </Table>
             </Widget>
